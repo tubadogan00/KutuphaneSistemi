@@ -37,6 +37,7 @@
             // 
             // txtKullaniciAdi
             // 
+            txtKullaniciAdi.Anchor = AnchorStyles.None;
             txtKullaniciAdi.Location = new Point(406, 93);
             txtKullaniciAdi.Name = "txtKullaniciAdi";
             txtKullaniciAdi.Size = new Size(125, 27);
@@ -44,6 +45,7 @@
             // 
             // txtSifre
             // 
+            txtSifre.Anchor = AnchorStyles.None;
             txtSifre.Location = new Point(406, 186);
             txtSifre.Name = "txtSifre";
             txtSifre.PasswordChar = '*';
@@ -52,6 +54,7 @@
             // 
             // btnGiris
             // 
+            btnGiris.Anchor = AnchorStyles.None;
             btnGiris.Location = new Point(332, 286);
             btnGiris.Name = "btnGiris";
             btnGiris.Size = new Size(94, 29);
@@ -62,6 +65,7 @@
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.None;
             label1.AutoSize = true;
             label1.Location = new Point(261, 96);
             label1.Name = "label1";
@@ -71,6 +75,7 @@
             // 
             // label2
             // 
+            label2.Anchor = AnchorStyles.None;
             label2.AutoSize = true;
             label2.Location = new Point(314, 189);
             label2.Name = "label2";
@@ -90,6 +95,7 @@
             Controls.Add(txtKullaniciAdi);
             Name = "Form1";
             Text = "Form1";
+            WindowState = FormWindowState.Maximized;
             ResumeLayout(false);
             PerformLayout();
         }

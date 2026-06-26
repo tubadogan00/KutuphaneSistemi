@@ -36,17 +36,28 @@ namespace kütüphaneSistemi
 
         private void btnGiris_Click(object sender, EventArgs e)
         {
-            if (txtKullaniciAdi.Text.Trim() == "admin" && txtSifre.Text.Trim() == "1234")
+            // Giriş kutularındaki bilgileri alalım
+            string kullaniciAdi = txtKullaniciAdi.Text;
+            string sifre = txtSifre.Text;
+
+            // 1. Admin Kontrolü
+            if (kullaniciAdi == "admin" && sifre == "admin123")
             {
-                Form2 anaEkran = new Form2();
-                anaEkran.FormClosed += (s, args) => Application.Exit();
-                anaEkran.Show();
+                adminPanel adminForm = new adminPanel();
+                adminForm.Show();
+                this.Hide(); // Giriş formunu gizle
+            }
+            // 2. Normal Kullanıcı Kontrolü
+            else if (kullaniciAdi == "user" && sifre == "user123")
+            {
+                Form2 userForm = new Form2(); // Form2'yi kullanıcı paneli olarak açıyoruz
+                userForm.Show();
                 this.Hide();
             }
+            // 3. Hatalı Giriş
             else
             {
-                MessageBox.Show("Kullanıcı adı veya şifre hatalı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtSifre.Clear();
+                MessageBox.Show("Kullanıcı adı veya şifre hatalı!");
             }
         }
     }

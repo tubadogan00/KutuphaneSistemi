@@ -5,18 +5,19 @@ using System.Windows.Forms;
 
 namespace kütüphaneSistemi
 {
+    public class Kitap
+    {
+        public string Ad { get; set; }
+        public string Yazar { get; set; }
+        public string ISBN { get; set; }
+        public int YayinYili { get; set; }
+        public int Sayfa { get; set; }
+        public string Tur { get; set; }
+        public int Stok { get; set; }
+    }
     public partial class Form2 : Form
     {
-        public class Kitap
-        {
-            public string Ad { get; set; }
-            public string Yazar { get; set; }
-            public string ISBN { get; set; }
-            public int YayinYili { get; set; }
-            public int Sayfa { get; set; }
-            public string Tur { get; set; }
-            public int Stok { get; set; }
-        }
+        
 
         List<Kitap> kitaplar = new List<Kitap>
         {
