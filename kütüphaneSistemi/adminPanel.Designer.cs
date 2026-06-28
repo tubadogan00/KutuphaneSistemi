@@ -62,9 +62,13 @@
             dgvKullanicilar = new DataGridView();
             panel2 = new Panel();
             btnKaydett = new Button();
+            btnKaydett.Click += btnKaydett_Click;
             btnKullaniciGuncelle = new Button();
+            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click;
             btnKullaniciSil = new Button();
+            btnKullaniciSil.Click += btnKullaniciSil_Click;
             btnKullaniciEkle = new Button();
+            btnKullaniciEkle.Click += btnKullaniciEkle_Click;
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -86,7 +90,7 @@
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(800, 450);
+            tabControl1.Size = new Size(1400, 800);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -95,17 +99,17 @@
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(792, 417);
+            tabPage1.Size = new Size(1392, 767);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "Kitap Yönetimi";
+            tabPage1.Text = "📚 Kitap Yönetimi";
             tabPage1.UseVisualStyleBackColor = true;
             tabPage1.Click += tabPage1_Click;
             // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             tableLayoutPanel1.Controls.Add(groupBox1, 1, 0);
             tableLayoutPanel1.Controls.Add(dgvAdminKitaplar, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
@@ -113,7 +117,7 @@
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.Size = new Size(786, 411);
+            tableLayoutPanel1.Size = new Size(1386, 761);
             tableLayoutPanel1.TabIndex = 7;
             // 
             // groupBox1
@@ -134,12 +138,14 @@
             groupBox1.Controls.Add(txtStok);
             groupBox1.Controls.Add(txtYil);
             groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(396, 3);
+            groupBox1.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            groupBox1.Location = new Point(903, 3);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(387, 405);
+            groupBox1.Padding = new Padding(15);
+            groupBox1.Size = new Size(480, 755);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Seçili Kitabı Düzenle";
+            groupBox1.Text = "Kitap Bilgileri";
             // 
             // panel1
             // 
@@ -148,9 +154,9 @@
             panel1.Controls.Add(btnKitapGuncelle);
             panel1.Controls.Add(btnKaydet);
             panel1.Controls.Add(btnKitapSil);
-            panel1.Location = new Point(222, 234);
+            panel1.Location = new Point(315, 584);
             panel1.Name = "panel1";
-            panel1.Size = new Size(163, 165);
+            panel1.Size = new Size(180, 220);
             panel1.TabIndex = 6;
             // 
             // btnKitapEkle
@@ -160,7 +166,7 @@
             btnKitapEkle.ForeColor = Color.White;
             btnKitapEkle.Location = new Point(3, 23);
             btnKitapEkle.Name = "btnKitapEkle";
-            btnKitapEkle.Size = new Size(126, 29);
+            btnKitapEkle.Size = new Size(150, 40);
             btnKitapEkle.TabIndex = 2;
             btnKitapEkle.Text = "Kitap Ekle";
             btnKitapEkle.UseVisualStyleBackColor = false;
@@ -173,7 +179,7 @@
             btnKitapGuncelle.ForeColor = Color.White;
             btnKitapGuncelle.Location = new Point(3, 93);
             btnKitapGuncelle.Name = "btnKitapGuncelle";
-            btnKitapGuncelle.Size = new Size(126, 29);
+            btnKitapGuncelle.Size = new Size(150, 40);
             btnKitapGuncelle.TabIndex = 4;
             btnKitapGuncelle.Text = "Kitap Güncelle";
             btnKitapGuncelle.UseVisualStyleBackColor = false;
@@ -186,7 +192,7 @@
             btnKaydet.ForeColor = Color.White;
             btnKaydet.Location = new Point(3, 128);
             btnKaydet.Name = "btnKaydet";
-            btnKaydet.Size = new Size(126, 29);
+            btnKaydet.Size = new Size(150, 40);
             btnKaydet.TabIndex = 5;
             btnKaydet.Text = "Kaydet";
             btnKaydet.UseVisualStyleBackColor = false;
@@ -199,7 +205,7 @@
             btnKitapSil.ForeColor = Color.White;
             btnKitapSil.Location = new Point(3, 58);
             btnKitapSil.Name = "btnKitapSil";
-            btnKitapSil.Size = new Size(126, 29);
+            btnKitapSil.Size = new Size(150, 40);
             btnKitapSil.TabIndex = 3;
             btnKitapSil.Text = "Kitap Sil";
             btnKitapSil.UseVisualStyleBackColor = false;
@@ -208,63 +214,70 @@
             // lblStok
             // 
             lblStok.AutoSize = true;
+            lblStok.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblStok.Location = new Point(37, 254);
             lblStok.Name = "lblStok";
-            lblStok.Size = new Size(85, 20);
+            lblStok.Size = new Size(105, 23);
             lblStok.TabIndex = 13;
             lblStok.Text = "Stok Adedi:";
             // 
             // lblTur
             // 
             lblTur.AutoSize = true;
+            lblTur.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblTur.Location = new Point(37, 221);
             lblTur.Name = "lblTur";
-            lblTur.Size = new Size(33, 20);
+            lblTur.Size = new Size(42, 23);
             lblTur.TabIndex = 12;
             lblTur.Text = "Tür:";
             // 
             // lblSayfa
             // 
             lblSayfa.AutoSize = true;
+            lblSayfa.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblSayfa.Location = new Point(37, 188);
             lblSayfa.Name = "lblSayfa";
-            lblSayfa.Size = new Size(89, 20);
+            lblSayfa.Size = new Size(109, 23);
             lblSayfa.TabIndex = 11;
             lblSayfa.Text = "Sayfa Sayısı:";
             // 
             // lblYayinYili
             // 
             lblYayinYili.AutoSize = true;
+            lblYayinYili.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblYayinYili.Location = new Point(37, 155);
             lblYayinYili.Name = "lblYayinYili";
-            lblYayinYili.Size = new Size(70, 20);
+            lblYayinYili.Size = new Size(86, 23);
             lblYayinYili.TabIndex = 10;
             lblYayinYili.Text = "Yayın Yılı:";
             // 
             // lblISBN
             // 
             lblISBN.AutoSize = true;
+            lblISBN.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblISBN.Location = new Point(37, 122);
             lblISBN.Name = "lblISBN";
-            lblISBN.Size = new Size(44, 20);
+            lblISBN.Size = new Size(54, 23);
             lblISBN.TabIndex = 9;
             lblISBN.Text = "ISBN:";
             // 
             // lblYazar
             // 
             lblYazar.AutoSize = true;
+            lblYazar.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblYazar.Location = new Point(37, 85);
             lblYazar.Name = "lblYazar";
-            lblYazar.Size = new Size(47, 20);
+            lblYazar.Size = new Size(57, 23);
             lblYazar.TabIndex = 8;
             lblYazar.Text = "Yazar:";
             // 
             // lblKitapAdi
             // 
             lblKitapAdi.AutoSize = true;
+            lblKitapAdi.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblKitapAdi.Location = new Point(37, 52);
             lblKitapAdi.Name = "lblKitapAdi";
-            lblKitapAdi.Size = new Size(74, 20);
+            lblKitapAdi.Size = new Size(91, 23);
             lblKitapAdi.TabIndex = 7;
             lblKitapAdi.Text = "Kitap Adı:";
             // 
@@ -272,60 +285,60 @@
             // 
             txtISBN.Location = new Point(176, 119);
             txtISBN.Name = "txtISBN";
-            txtISBN.Size = new Size(125, 27);
+            txtISBN.Size = new Size(180, 32);
             txtISBN.TabIndex = 6;
             // 
             // txtKitapAdi
             // 
             txtKitapAdi.Location = new Point(176, 49);
             txtKitapAdi.Name = "txtKitapAdi";
-            txtKitapAdi.Size = new Size(125, 27);
+            txtKitapAdi.Size = new Size(180, 32);
             txtKitapAdi.TabIndex = 5;
             // 
             // txtYazar
             // 
             txtYazar.Location = new Point(176, 82);
             txtYazar.Name = "txtYazar";
-            txtYazar.Size = new Size(125, 27);
+            txtYazar.Size = new Size(180, 32);
             txtYazar.TabIndex = 4;
             // 
             // txtSayfa
             // 
             txtSayfa.Location = new Point(176, 185);
             txtSayfa.Name = "txtSayfa";
-            txtSayfa.Size = new Size(125, 27);
+            txtSayfa.Size = new Size(180, 32);
             txtSayfa.TabIndex = 3;
             // 
             // txtTur
             // 
             txtTur.Location = new Point(176, 218);
             txtTur.Name = "txtTur";
-            txtTur.Size = new Size(125, 27);
+            txtTur.Size = new Size(180, 32);
             txtTur.TabIndex = 2;
             // 
             // txtStok
             // 
             txtStok.Location = new Point(176, 251);
             txtStok.Name = "txtStok";
-            txtStok.Size = new Size(125, 27);
+            txtStok.Size = new Size(180, 32);
             txtStok.TabIndex = 1;
             // 
             // txtYil
             // 
             txtYil.Location = new Point(176, 152);
             txtYil.Name = "txtYil";
-            txtYil.Size = new Size(125, 27);
+            txtYil.Size = new Size(180, 32);
             txtYil.TabIndex = 0;
             // 
             // dgvAdminKitaplar
             // 
-            dgvAdminKitaplar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvAdminKitaplar.BackgroundColor = SystemColors.GradientActiveCaption;
             dgvAdminKitaplar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvAdminKitaplar.Dock = DockStyle.Fill;
             dgvAdminKitaplar.Location = new Point(3, 3);
             dgvAdminKitaplar.Name = "dgvAdminKitaplar";
             dgvAdminKitaplar.RowHeadersWidth = 51;
-            dgvAdminKitaplar.Size = new Size(387, 405);
+            dgvAdminKitaplar.Size = new Size(894, 755);
             dgvAdminKitaplar.TabIndex = 0;
             dgvAdminKitaplar.CellContentClick += dgvAdminKitaplar_CellContentClick;
             dgvAdminKitaplar.SelectionChanged += dgvAdminKitaplar_SelectionChanged;
@@ -337,30 +350,35 @@
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(792, 417);
+            tabPage2.Size = new Size(1392, 767);
             tabPage2.TabIndex = 1;
-            tabPage2.Text = "Kullanıcılar";
+            tabPage2.Text = "👤 Kullanıcı Yönetimi";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
+            groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(panel2);
             groupBox2.Controls.Add(lblEmail);
             groupBox2.Controls.Add(lblAdSoyad);
             groupBox2.Controls.Add(txtEmail);
             groupBox2.Controls.Add(txtKullaniciAdi);
-            groupBox2.Location = new Point(421, 6);
+            groupBox2.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            groupBox2.Location = new Point(906, 6);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(363, 251);
+            groupBox2.Padding = new Padding(15);
+            groupBox2.Size = new Size(483, 758);
             groupBox2.TabIndex = 1;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Kullanıcı İşlemleri";
+            groupBox2.Text = "Kullanıcı Bilgileri";
             // 
             // lblEmail
             // 
             lblEmail.AutoSize = true;
+            lblEmail.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblEmail.Location = new Point(76, 92);
             lblEmail.Name = "lblEmail";
-            lblEmail.Size = new Size(49, 20);
+            lblEmail.Size = new Size(59, 23);
             lblEmail.TabIndex = 3;
             lblEmail.Text = "Email:";
             lblEmail.Click += label2_Click;
@@ -368,9 +386,10 @@
             // lblAdSoyad
             // 
             lblAdSoyad.AutoSize = true;
+            lblAdSoyad.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             lblAdSoyad.Location = new Point(49, 44);
             lblAdSoyad.Name = "lblAdSoyad";
-            lblAdSoyad.Size = new Size(76, 20);
+            lblAdSoyad.Size = new Size(92, 23);
             lblAdSoyad.TabIndex = 2;
             lblAdSoyad.Text = "Ad Soyad:";
             // 
@@ -378,43 +397,42 @@
             // 
             txtEmail.Location = new Point(193, 89);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(125, 27);
+            txtEmail.Size = new Size(180, 32);
             txtEmail.TabIndex = 1;
             // 
             // txtKullaniciAdi
             // 
             txtKullaniciAdi.Location = new Point(193, 41);
             txtKullaniciAdi.Name = "txtKullaniciAdi";
-            txtKullaniciAdi.Size = new Size(125, 27);
+            txtKullaniciAdi.Size = new Size(180, 32);
             txtKullaniciAdi.TabIndex = 0;
             txtKullaniciAdi.TextChanged += txtKullaniciAdi_TextChanged;
             // 
             // tableLayoutPanel2
             // 
             tableLayoutPanel2.ColumnCount = 2;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             tableLayoutPanel2.Controls.Add(dgvKullanicilar, 0, 0);
-            tableLayoutPanel2.Controls.Add(panel2, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel2.Size = new Size(786, 411);
+            tableLayoutPanel2.Size = new Size(1386, 761);
             tableLayoutPanel2.TabIndex = 4;
             tableLayoutPanel2.Paint += tableLayoutPanel2_Paint;
             // 
             // dgvKullanicilar
             // 
-            dgvKullanicilar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             dgvKullanicilar.BackgroundColor = SystemColors.GradientActiveCaption;
             dgvKullanicilar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvKullanicilar.Dock = DockStyle.Fill;
             dgvKullanicilar.Location = new Point(3, 3);
             dgvKullanicilar.Name = "dgvKullanicilar";
             dgvKullanicilar.RowHeadersWidth = 51;
-            dgvKullanicilar.Size = new Size(387, 405);
+            dgvKullanicilar.Size = new Size(894, 755);
             dgvKullanicilar.TabIndex = 0;
             dgvKullanicilar.CellContentClick += dgvKullanicilar_CellContentClick;
             dgvKullanicilar.SelectionChanged += dgvKullanicilar_SelectionChanged;
@@ -426,46 +444,44 @@
             panel2.Controls.Add(btnKullaniciGuncelle);
             panel2.Controls.Add(btnKullaniciSil);
             panel2.Controls.Add(btnKullaniciEkle);
-            panel2.Location = new Point(533, 260);
+            panel2.Location = new Point(285, 520);
             panel2.Name = "panel2";
-            panel2.Size = new Size(250, 148);
-            panel2.TabIndex = 3;
+            panel2.Size = new Size(180, 220);
+            panel2.TabIndex = 4;
             // 
             // btnKaydett
             // 
             btnKaydett.BackColor = Color.CornflowerBlue;
             btnKaydett.ForeColor = Color.White;
-            btnKaydett.Location = new Point(3, 108);
+            btnKaydett.Location = new Point(3, 139);
             btnKaydett.Name = "btnKaydett";
-            btnKaydett.Size = new Size(136, 29);
+            btnKaydett.Size = new Size(174, 40);
             btnKaydett.TabIndex = 5;
             btnKaydett.Text = "Kaydet";
             btnKaydett.UseVisualStyleBackColor = false;
-            btnKaydett.Click += btnKaydett_Click;
             // 
             // btnKullaniciGuncelle
             // 
             btnKullaniciGuncelle.BackColor = Color.CornflowerBlue;
             btnKullaniciGuncelle.ForeColor = Color.White;
-            btnKullaniciGuncelle.Location = new Point(3, 73);
+            btnKullaniciGuncelle.Location = new Point(3, 93);
             btnKullaniciGuncelle.Name = "btnKullaniciGuncelle";
-            btnKullaniciGuncelle.Size = new Size(136, 29);
+            btnKullaniciGuncelle.Size = new Size(177, 40);
             btnKullaniciGuncelle.TabIndex = 4;
             btnKullaniciGuncelle.Text = "Kullanıcı Güncelle";
             btnKullaniciGuncelle.UseVisualStyleBackColor = false;
-            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click;
+            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click_1;
             // 
             // btnKullaniciSil
             // 
             btnKullaniciSil.BackColor = Color.CornflowerBlue;
             btnKullaniciSil.ForeColor = Color.White;
-            btnKullaniciSil.Location = new Point(3, 38);
+            btnKullaniciSil.Location = new Point(3, 47);
             btnKullaniciSil.Name = "btnKullaniciSil";
-            btnKullaniciSil.Size = new Size(136, 29);
+            btnKullaniciSil.Size = new Size(174, 40);
             btnKullaniciSil.TabIndex = 3;
             btnKullaniciSil.Text = "Kullanıcı Sil";
             btnKullaniciSil.UseVisualStyleBackColor = false;
-            btnKullaniciSil.Click += btnKullaniciSil_Click;
             // 
             // btnKullaniciEkle
             // 
@@ -473,20 +489,21 @@
             btnKullaniciEkle.ForeColor = Color.White;
             btnKullaniciEkle.Location = new Point(3, 3);
             btnKullaniciEkle.Name = "btnKullaniciEkle";
-            btnKullaniciEkle.Size = new Size(136, 29);
+            btnKullaniciEkle.Size = new Size(174, 40);
             btnKullaniciEkle.TabIndex = 2;
             btnKullaniciEkle.Text = "Kullanıcı Ekle";
             btnKullaniciEkle.UseVisualStyleBackColor = false;
-            btnKullaniciEkle.Click += btnKullaniciEkle_Click;
             // 
             // adminPanel
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1400, 800);
             Controls.Add(tabControl1);
+            MinimumSize = new Size(1200, 700);
             Name = "adminPanel";
-            Text = "adminPanel";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Kütüphane Yönetim Paneli";
             WindowState = FormWindowState.Maximized;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
@@ -537,11 +554,11 @@
         private TextBox txtKullaniciAdi;
         private Label lblEmail;
         private Label lblAdSoyad;
+        private TableLayoutPanel tableLayoutPanel2;
         private Panel panel2;
         private Button btnKaydett;
         private Button btnKullaniciGuncelle;
         private Button btnKullaniciSil;
         private Button btnKullaniciEkle;
-        private TableLayoutPanel tableLayoutPanel2;
     }
 }

@@ -5,13 +5,12 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using kütüphaneSistemi;
+using System.Linq;
 namespace kütüphaneSistemi
 {
     public partial class adminPanel : Form
     {
-        List<Kitap> kitaplar = new List<Kitap>();
 
         public adminPanel()
         {
@@ -36,17 +35,52 @@ namespace kütüphaneSistemi
         }
 
         private void TemayiUygula()
+
         {
             this.BackColor = Color.FromArgb(240, 240, 240);
 
-            // Hem kitaplar hem de kullanıcılar tablosunu boya
             foreach (DataGridView dgv in new[] { dgvAdminKitaplar, dgvKullanicilar })
             {
-                dgv.BackgroundColor = Color.White;
                 dgv.BorderStyle = BorderStyle.None;
-                dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(100, 149, 237);
-                dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+
+                dgv.BackgroundColor = Color.White;
+
+                dgv.GridColor = Color.Gainsboro;
+
                 dgv.EnableHeadersVisualStyles = false;
+
+                dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(100, 149, 237);
+
+                dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+
+                dgv.ColumnHeadersDefaultCellStyle.Font =
+                    new Font("Segoe UI", 10, FontStyle.Bold);
+
+                dgv.ColumnHeadersHeight = 40;
+
+                dgv.RowTemplate.Height = 34;
+
+                dgv.DefaultCellStyle.Font =
+                    new Font("Segoe UI", 10);
+
+                dgv.DefaultCellStyle.SelectionBackColor =
+                    Color.FromArgb(176, 224, 230);
+
+                dgv.DefaultCellStyle.SelectionForeColor =
+                    Color.Black;
+
+                dgv.AlternatingRowsDefaultCellStyle.BackColor =
+                    Color.FromArgb(248, 250, 252);
+
+                dgv.AutoSizeColumnsMode =
+                    DataGridViewAutoSizeColumnsMode.Fill;
+
+                dgv.SelectionMode =
+                    DataGridViewSelectionMode.FullRowSelect;
+
+                dgv.MultiSelect = false;
+
+                dgv.RowHeadersVisible = false;
             }
 
             BoyaliKontrolleriBul(this);
@@ -60,17 +94,45 @@ namespace kütüphaneSistemi
                 if (ctrl is Button btn)
                 {
                     btn.BackColor = Color.FromArgb(100, 149, 237);
+
                     btn.ForeColor = Color.White;
+
                     btn.FlatStyle = FlatStyle.Flat;
+
                     btn.FlatAppearance.BorderSize = 0;
-                    btn.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+
+                    btn.Cursor = Cursors.Hand;
+
+                    btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+                    btn.Height = 38;
+
+                    btn.Width = 150;
+
+                    btn.MouseEnter += (s, e) =>
+                    {
+                        btn.BackColor =
+                            Color.FromArgb(65, 105, 225);
+                    };
+
+                    btn.MouseLeave += (s, e) =>
+                    {
+                        btn.BackColor =
+                            Color.FromArgb(100, 149, 237);
+                    };
                 }
 
-                // Eğer kontrolün kendi içinde de başka kontroller varsa (Panel, GroupBox gibi), oraya da gir
-                if (ctrl.HasChildren)
+                if (ctrl is TextBox txt)
                 {
-                    BoyaliKontrolleriBul(ctrl);
+                    txt.Font = new Font("Segoe UI", 10);
+
+                    txt.BorderStyle = BorderStyle.FixedSingle;
+
+                    txt.BackColor = Color.White;
                 }
+
+                if (ctrl.HasChildren)
+                    BoyaliKontrolleriBul(ctrl);
             }
         }
 
@@ -153,11 +215,10 @@ namespace kütüphaneSistemi
                     Kitap seciliKitap = (Kitap)dgvAdminKitaplar.CurrentRow.DataBoundItem;
 
                     // 4. Listeden o kitabı kaldır
-                    kitaplar.Remove(seciliKitap);
+                    KutuphaneVeri.TumKitaplar.Remove(seciliKitap);
 
-                    // 5. Tabloyu tazeleyerek silineni ekrandan kaldır
                     dgvAdminKitaplar.DataSource = null;
-                    dgvAdminKitaplar.DataSource = kitaplar;
+                    dgvAdminKitaplar.DataSource = KutuphaneVeri.TumKitaplar;
 
                     MessageBox.Show("Kitap başarıyla silindi.");
                 }
@@ -367,6 +428,21 @@ namespace kütüphaneSistemi
             {
                 MessageBox.Show("Lütfen güncellemek için bir kullanıcı seçin.");
             }
+        }
+
+        private void userFormPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void adminPanel_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnKullaniciGuncelle_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
