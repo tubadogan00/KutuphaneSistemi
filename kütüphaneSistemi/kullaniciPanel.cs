@@ -27,19 +27,50 @@ namespace kütüphaneSistemi
         private void Form2_Load(object sender, EventArgs e)
         {
             TemayiUygula();
-            KitaplariGetirVeGoster(); // Verileri veritabanından çek
 
-            // Ödünç alınanlar tablosunun sütunlarını burada manuel tanımlayalım
-            dgvOduncAlinanlar.Columns.Clear(); // Önce temizle
-            dgvOduncAlinanlar.Columns.Add("KitapAdi", "Kitap Adı");
-            dgvOduncAlinanlar.Columns.Add("ISBN", "ISBN");
-            dgvOduncAlinanlar.Columns.Add("AlisTarihi", "Alınma Tarihi");
-            dgvOduncAlinanlar.Columns.Add("TeslimTarihi", "Teslim Tarihi");
+            // 1. Sütunları BİR KEZ burada tanımla (yoksa)
+            if (dgvOduncAlinanlar.Columns.Count == 0)
+            {
+                dgvOduncAlinanlar.Columns.Add("KitapAdi", "Kitap Adı");
+                dgvOduncAlinanlar.Columns.Add("ISBN", "ISBN");
+                dgvOduncAlinanlar.Columns.Add("AlisTarihi", "Alınma Tarihi");
+                dgvOduncAlinanlar.Columns.Add("TeslimTarihi", "Teslim Tarihi");
+            }
 
-            // Tasarım ayarları
-            dgvOduncAlinanlar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
+            KitaplariGetirVeGoster();
+            OduncAlinanlariGetir(); // Veritabanından verileri çek ve dgv'ye bas
         }
+        private void OduncAlinanlariGetir()
+{
+    try
+    {
+        using (var con = KutuphaneVeri.Baglan())
+        {
+            con.Open();
+            string sorgu = @"SELECT k.Ad, k.ISBN, o.VerilisTarihi, o.TeslimTarihi 
+                             FROM OduncKitaplar o 
+                             INNER JOIN Kitaplar k ON o.KitapID = k.KitapID";
+
+            MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            // SADECE SATIRLARI TEMİZLE
+            dgvOduncAlinanlar.Rows.Clear(); 
+            
+            foreach (DataRow row in dt.Rows)
+            {
+                dgvOduncAlinanlar.Rows.Add(row["Ad"], row["ISBN"],
+                    Convert.ToDateTime(row["VerilisTarihi"]).ToString("dd.MM.yyyy"),
+                    Convert.ToDateTime(row["TeslimTarihi"]).ToString("dd.MM.yyyy"));
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show("Ödünç listesi yüklenirken hata: " + ex.Message);
+    }
+}
 
         private void KitaplariGetirVeGoster()
         {
@@ -94,66 +125,55 @@ namespace kütüphaneSistemi
 
         private void btnOduncAl_Click(object sender, EventArgs e)
         {
-            if (dgvKitaplar.CurrentRow == null)
-            {
-                MessageBox.Show("Lütfen ödünç almak için bir kitap seçin.");
-                return;
-            }
+            if (dgvKitaplar.CurrentRow == null) return;
 
-            // 1. Seçili satırdaki verileri al
             DataRowView rowView = (DataRowView)dgvKitaplar.CurrentRow.DataBoundItem;
-            int kitapID = Convert.ToInt32(rowView["KitapID"]); // Veritabanındaki ID
+            int kitapID = Convert.ToInt32(rowView["KitapID"]);
             string kitapAdi = rowView["Ad"].ToString();
             string isbn = rowView["ISBN"].ToString();
             int stok = Convert.ToInt32(rowView["Stok"]);
 
-            // 2. KONTROL: Daha önce alınmış mı? (ISBN üzerinden)
-            foreach (DataGridViewRow row in dgvOduncAlinanlar.Rows)
+            if (stok <= 1)
             {
-                if (row.Cells[1].Value != null && row.Cells[1].Value.ToString() == isbn)
-                {
-                    MessageBox.Show("Bu kitap zaten sizde mevcut!", "Kısıtlama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                MessageBox.Show("Bu kitap ödünç verilemez veya stokta yok!");
+                return;
             }
 
-            // 3. KONTROL: Stok durumu
-            if (stok > 1)
+            try
             {
-                try
+                using (var con = KutuphaneVeri.Baglan())
                 {
-                    using (var con = KutuphaneVeri.Baglan())
+                    con.Open();
+                    // Transaction kullanarak iki işlemin de başarılı olduğundan emin oluyoruz
+                    using (var trans = con.BeginTransaction())
                     {
-                        con.Open();
-                        // Veritabanında stoğu güncelle
-                        string sorgu = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @id";
-                        MySqlCommand cmd = new MySqlCommand(sorgu, con);
-                        cmd.Parameters.AddWithValue("@id", kitapID);
-                        cmd.ExecuteNonQuery();
+                        // 1. Stok düş
+                        string sqlStok = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @id";
+                        MySqlCommand cmd1 = new MySqlCommand(sqlStok, con, trans);
+                        cmd1.Parameters.AddWithValue("@id", kitapID);
+                        cmd1.ExecuteNonQuery();
+
+                        // 2. Ödünç kaydı ekle
+                        // btnOduncAl_Click içindeki ilgili satır
+                        string sqlKayit = "INSERT INTO OduncKitaplar (KitapID, VerilisTarihi, TeslimTarihi) VALUES (@id, @alis, @teslim)";
+                        MySqlCommand cmd2 = new MySqlCommand(sqlKayit, con, trans);
+                        cmd2.Parameters.AddWithValue("@id", kitapID);
+                        cmd2.Parameters.AddWithValue("@alis", DateTime.Now);
+                        cmd2.Parameters.AddWithValue("@teslim", DateTime.Now.AddDays(30));
+                        cmd2.ExecuteNonQuery();
+
+                        trans.Commit(); // Her şey yolunda
                     }
-
-                    // Arayüzü güncelle
-                    DateTime alis = DateTime.Now;
-                    DateTime teslim = alis.AddDays(30);
-                    dgvOduncAlinanlar.Rows.Add(kitapAdi, isbn, alis.ToString("dd.MM.yyyy"), teslim.ToString("dd.MM.yyyy"));
-
-                    // Tabloyu yeniden yükle ki stok azalmış haliyle görünsün
-                    KitaplariGetirVeGoster();
-
-                    MessageBox.Show($"{kitapAdi} başarıyla ödünç alındı.");
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ödünç alma sırasında hata oluştu: " + ex.Message);
-                }
+
+                // Güncellemeleri yansıt
+                KitaplariGetirVeGoster();
+                OduncAlinanlariGetir();
+                MessageBox.Show($"{kitapAdi} başarıyla ödünç alındı.");
             }
-            else if (stok == 1)
+            catch (Exception ex)
             {
-                MessageBox.Show("Bu kitap son kopyadır, ödünç verilemez!", "Stok Uyarısı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                MessageBox.Show("Bu kitap stokta yok.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Hata: " + ex.Message);
             }
         }
 
