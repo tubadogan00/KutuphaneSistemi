@@ -1,4 +1,6 @@
-﻿namespace kütüphaneSistemi
+﻿using System.Drawing;
+using System.Windows.Forms;
+namespace kütüphaneSistemi
 {
     partial class Form2
     {
@@ -16,6 +18,9 @@
             btnOduncAl = new Button();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            textBox1 = new TextBox();
+            label1 = new Label();
+            button1 = new Button();
             tabPage2 = new TabPage();
             dgvOduncAlinanlar = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)dgvKitaplar).BeginInit();
@@ -28,10 +33,11 @@
             // dgvKitaplar
             // 
             dgvKitaplar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvKitaplar.Location = new Point(3, 3);
+            dgvKitaplar.Dock = DockStyle.Fill;
+            dgvKitaplar.Location = new Point(0, 0);
             dgvKitaplar.Name = "dgvKitaplar";
             dgvKitaplar.RowHeadersWidth = 51;
-            dgvKitaplar.Size = new Size(632, 429);
+            dgvKitaplar.Size = new Size(729, 528);
             dgvKitaplar.TabIndex = 0;
             // 
             // btnOduncAl
@@ -41,7 +47,6 @@
             btnOduncAl.Size = new Size(100, 30);
             btnOduncAl.TabIndex = 1;
             btnOduncAl.Text = "Ödünç Al";
-            btnOduncAl.UseVisualStyleBackColor = true;
             btnOduncAl.Click += btnOduncAl_Click;
             // 
             // tabControl1
@@ -52,44 +57,80 @@
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(646, 468);
-            tabControl1.TabIndex = 2;
+            tabControl1.Size = new Size(737, 561);
+            tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(textBox1);
+            tabPage1.Controls.Add(label1);
+            tabPage1.Controls.Add(button1);
             tabPage1.Controls.Add(btnOduncAl);
             tabPage1.Controls.Add(dgvKitaplar);
             tabPage1.Location = new Point(4, 29);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(638, 435);
+            tabPage1.Size = new Size(729, 528);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Kitaplar";
-            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(516, 268);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(125, 27);
+            textBox1.TabIndex = 4;
+            textBox1.TextChanged += textBox1_TextChanged;
+            textBox1.Enter += textBox1_Enter;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            label1.Location = new Point(366, 270);
+            label1.Name = "label1";
+            label1.Size = new Size(121, 25);
+            label1.TabIndex = 3;
+            label1.Text = "🔍Kitap Ara:";
+            // 
+            // button1
+            // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            button1.BackColor = Color.CornflowerBlue;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            button1.ForeColor = Color.White;
+            button1.Location = new Point(569, 446);
+            button1.Name = "button1";
+            button1.Size = new Size(105, 37);
+            button1.TabIndex = 2;
+            button1.Text = "Çıkış Yap";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
             // 
             // tabPage2
             // 
             tabPage2.Controls.Add(dgvOduncAlinanlar);
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(638, 435);
+            tabPage2.Size = new Size(729, 528);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Ödünç Alınanlar";
-            tabPage2.UseVisualStyleBackColor = true;
             // 
             // dgvOduncAlinanlar
             // 
-            dgvOduncAlinanlar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvOduncAlinanlar.Location = new Point(187, 141);
+            dgvOduncAlinanlar.BackgroundColor = Color.White;
+            dgvOduncAlinanlar.ColumnHeadersHeight = 29;
+            dgvOduncAlinanlar.Dock = DockStyle.Left;
+            dgvOduncAlinanlar.Location = new Point(0, 0);
             dgvOduncAlinanlar.Name = "dgvOduncAlinanlar";
             dgvOduncAlinanlar.RowHeadersWidth = 51;
-            dgvOduncAlinanlar.Size = new Size(300, 188);
+            dgvOduncAlinanlar.Size = new Size(729, 528);
             dgvOduncAlinanlar.TabIndex = 0;
             // 
             // Form2
             // 
-            ClientSize = new Size(646, 468);
+            BackColor = Color.White;
+            ClientSize = new Size(737, 561);
             Controls.Add(tabControl1);
             Name = "Form2";
             Text = "Kütüphane Sistemi";
@@ -98,6 +139,7 @@
             ((System.ComponentModel.ISupportInitialize)dgvKitaplar).EndInit();
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvOduncAlinanlar).EndInit();
             ResumeLayout(false);
@@ -109,5 +151,8 @@
         private TabPage tabPage1;
         private TabPage tabPage2;
         private DataGridView dgvOduncAlinanlar;
+        private Button button1;
+        private TextBox textBox1;
+        private Label label1;
     }
 }

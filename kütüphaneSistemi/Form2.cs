@@ -1,81 +1,65 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace kütüphaneSistemi
 {
-    public class Kitap
-    {
-        public string Ad { get; set; }
-        public string Yazar { get; set; }
-        public string ISBN { get; set; }
-        public int YayinYili { get; set; }
-        public int Sayfa { get; set; }
-        public string Tur { get; set; }
-        public int Stok { get; set; }
-    }
+
+    [System.ComponentModel.DesignerCategory("Form")]
     public partial class Form2 : Form
     {
-        
 
-        List<Kitap> kitaplar = new List<Kitap>
-        {
-            new Kitap { Ad = "Suç ve Ceza", Yazar = "Dostoyevski", ISBN = "978-975", YayinYili = 1866, Sayfa = 687, Tur = "Roman", Stok = 6 },
-            new Kitap { Ad = "Sefiller", Yazar = "Victor Hugo", ISBN = "978-976", YayinYili = 1862, Sayfa = 1462, Tur = "Klasik", Stok = 0 },
-            new Kitap { Ad = "Nutuk", Yazar = "M. Kemal Atatürk", ISBN = "978-977", YayinYili = 1927, Sayfa = 500, Tur = "Tarih", Stok = 1 },
-            new Kitap { Ad = "1984", Yazar = "George Orwell", ISBN = "978-004", YayinYili = 1949, Sayfa = 328, Tur = "Bilim Kurgu", Stok = 5 },
-            new Kitap { Ad = "Beyaz Geceler", Yazar = "Dostoyevski", ISBN = "978-005", YayinYili = 1848, Sayfa = 112, Tur = "Roman", Stok = 3 },
-            new Kitap { Ad = "Simyacı", Yazar = "Paulo Coelho", ISBN = "978-006", YayinYili = 1988, Sayfa = 184, Tur = "Macera", Stok = 8 },
-            new Kitap { Ad = "Kürk Mantolu Madonna", Yazar = "Sabahattin Ali", ISBN = "978-007", YayinYili = 1943, Sayfa = 177, Tur = "Roman", Stok = 4 },
-            new Kitap { Ad = "Hayvan Çiftliği", Yazar = "George Orwell", ISBN = "978-008", YayinYili = 1945, Sayfa = 152, Tur = "Distopya", Stok = 7 },
-            new Kitap { Ad = "Küçük Prens", Yazar = "Antoine de Saint-Exupéry", ISBN = "978-009", YayinYili = 1943, Sayfa = 96, Tur = "Çocuk", Stok = 10 },
-            new Kitap { Ad = "Satranç", Yazar = "Stefan Zweig", ISBN = "978-010", YayinYili = 1942, Sayfa = 94, Tur = "Roman", Stok = 2 },
-            new Kitap { Ad = "Şeker Portakalı", Yazar = "José Mauro de Vasconcelos", ISBN = "978-011", YayinYili = 1968, Sayfa = 200, Tur = "Roman", Stok = 5 },
-            new Kitap { Ad = "Dönüşüm", Yazar = "Franz Kafka", ISBN = "978-012", YayinYili = 1915, Sayfa = 104, Tur = "Klasik", Stok = 3 },
-            new Kitap { Ad = "Uçurtma Avcısı", Yazar = "Khaled Hosseini", ISBN = "978-013", YayinYili = 2003, Sayfa = 375, Tur = "Roman", Stok = 6 }
-        };
 
         public Form2()
         {
             InitializeComponent();
+
+            textBox1.Enter += textBox1_Enter;
+            textBox1.Leave += textBox1_Leave;
+
+            textBox1.Text = "Kitap giriniz..."; // Burayı düzelttik
+            textBox1.ForeColor = Color.Gray;
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
             TemayiUygula();
+            KitaplariGetirVeGoster(); // Verileri veritabanından çek
 
-            // 1. KİTAPLAR TABI İÇİN AYARLAR
-            dgvKitaplar.DataSource = kitaplar;
+            // Ödünç alınanlar tablosunun sütunlarını burada manuel tanımlayalım
+            dgvOduncAlinanlar.Columns.Clear(); // Önce temizle
+            dgvOduncAlinanlar.Columns.Add("KitapAdi", "Kitap Adı");
+            dgvOduncAlinanlar.Columns.Add("ISBN", "ISBN");
+            dgvOduncAlinanlar.Columns.Add("AlisTarihi", "Alınma Tarihi");
+            dgvOduncAlinanlar.Columns.Add("TeslimTarihi", "Teslim Tarihi");
 
-            dgvKitaplar.Columns["Ad"].HeaderText = "Kitap Adı";
-            dgvKitaplar.Columns["Yazar"].HeaderText = "Yazar";
-            dgvKitaplar.Columns["ISBN"].HeaderText = "ISBN";
-            dgvKitaplar.Columns["YayinYili"].HeaderText = "Yayın Yılı";
-            dgvKitaplar.Columns["Sayfa"].HeaderText = "Sayfa";
-            dgvKitaplar.Columns["Tur"].HeaderText = "Tür";
-            dgvKitaplar.Columns["Stok"].HeaderText = "Stok";
-
-            dgvKitaplar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dgvKitaplar.Size = new Size(820, 500);
-
-            int x1 = (tabPage1.ClientSize.Width - dgvKitaplar.Width) / 2;
-            int y1 = (tabPage1.ClientSize.Height - dgvKitaplar.Height - 50) / 2;
-            dgvKitaplar.Location = new Point(x1, y1);
-            btnOduncAl.Location = new Point(x1, dgvKitaplar.Bottom + 10);
-
-            // 2. ÖDÜNÇ ALINANLAR TABI İÇİN AYARLAR
-            dgvOduncAlinanlar.ColumnCount = 4;
-            dgvOduncAlinanlar.Columns[0].Name = "Kitap Adı";
-            dgvOduncAlinanlar.Columns[1].Name = "ISBN";
-            dgvOduncAlinanlar.Columns[2].Name = "Alınma Tarihi";
-            dgvOduncAlinanlar.Columns[3].Name = "Teslim Tarihi";
-            dgvOduncAlinanlar.Size = new Size(770, 300);
+            // Tasarım ayarları
             dgvOduncAlinanlar.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            int x2 = (tabPage2.ClientSize.Width - dgvOduncAlinanlar.Width) / 2;
-            int y2 = (tabPage2.ClientSize.Height - dgvOduncAlinanlar.Height) / 2;
-            dgvOduncAlinanlar.Location = new Point(x2, y2);
+        }
+
+        private void KitaplariGetirVeGoster()
+        {
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan()) // Ortak bağlantı sınıfın
+                {
+                    con.Open();
+                    string sorgu = "SELECT * FROM Kitaplar";
+                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    dgvKitaplar.DataSource = dt; // Artık veritabanından gelen tabloyu kullanıyoruz
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Kitaplar yüklenirken hata: " + ex.Message);
+            }
         }
 
         private void TemayiUygula()
@@ -110,40 +94,124 @@ namespace kütüphaneSistemi
 
         private void btnOduncAl_Click(object sender, EventArgs e)
         {
-            if (dgvKitaplar.CurrentRow != null)
+            if (dgvKitaplar.CurrentRow == null)
             {
-                Kitap seciliKitap = (Kitap)dgvKitaplar.CurrentRow.DataBoundItem;
+                MessageBox.Show("Lütfen ödünç almak için bir kitap seçin.");
+                return;
+            }
 
-                // 1. KONTROL: Daha önce alınmış mı? (ISBN üzerinden kontrol)
-                foreach (DataGridViewRow row in dgvOduncAlinanlar.Rows)
+            // 1. Seçili satırdaki verileri al
+            DataRowView rowView = (DataRowView)dgvKitaplar.CurrentRow.DataBoundItem;
+            int kitapID = Convert.ToInt32(rowView["KitapID"]); // Veritabanındaki ID
+            string kitapAdi = rowView["Ad"].ToString();
+            string isbn = rowView["ISBN"].ToString();
+            int stok = Convert.ToInt32(rowView["Stok"]);
+
+            // 2. KONTROL: Daha önce alınmış mı? (ISBN üzerinden)
+            foreach (DataGridViewRow row in dgvOduncAlinanlar.Rows)
+            {
+                if (row.Cells[1].Value != null && row.Cells[1].Value.ToString() == isbn)
                 {
-                    if (row.Cells[1].Value != null && row.Cells[1].Value.ToString() == seciliKitap.ISBN)
-                    {
-                        MessageBox.Show("Bu kitap zaten sizde mevcut, tekrar alamazsınız!", "Kısıtlama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return; // İşlemi durdur
-                    }
+                    MessageBox.Show("Bu kitap zaten sizde mevcut!", "Kısıtlama", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
+            }
 
-                // 2. KONTROL: Stok kısıtlaması (Daha önce yazdığımız kod)
-                if (seciliKitap.Stok > 1)
+            // 3. KONTROL: Stok durumu
+            if (stok > 1)
+            {
+                try
                 {
-                    seciliKitap.Stok--;
-                    dgvKitaplar.Refresh();
+                    using (var con = KutuphaneVeri.Baglan())
+                    {
+                        con.Open();
+                        // Veritabanında stoğu güncelle
+                        string sorgu = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @id";
+                        MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                        cmd.Parameters.AddWithValue("@id", kitapID);
+                        cmd.ExecuteNonQuery();
+                    }
 
+                    // Arayüzü güncelle
                     DateTime alis = DateTime.Now;
                     DateTime teslim = alis.AddDays(30);
+                    dgvOduncAlinanlar.Rows.Add(kitapAdi, isbn, alis.ToString("dd.MM.yyyy"), teslim.ToString("dd.MM.yyyy"));
 
-                    dgvOduncAlinanlar.Rows.Add(seciliKitap.Ad, seciliKitap.ISBN, alis.ToString("dd.MM.yyyy"), teslim.ToString("dd.MM.yyyy"));
-                    MessageBox.Show($"{seciliKitap.Ad} başarıyla ödünç alındı.");
+                    // Tabloyu yeniden yükle ki stok azalmış haliyle görünsün
+                    KitaplariGetirVeGoster();
+
+                    MessageBox.Show($"{kitapAdi} başarıyla ödünç alındı.");
                 }
-                else if (seciliKitap.Stok == 1)
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Bu kitap son kopyadır, ödünç verilemez!", "Stok Uyarısı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Ödünç alma sırasında hata oluştu: " + ex.Message);
                 }
-                else
+            }
+            else if (stok == 1)
+            {
+                MessageBox.Show("Bu kitap son kopyadır, ödünç verilemez!", "Stok Uyarısı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("Bu kitap stokta yok.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // Kullanıcıya onay soralım
+            DialogResult secim = MessageBox.Show("Giriş ekranına dönmek istediğinize emin misiniz?",
+                                                 "Çıkış Onayı",
+                                                 MessageBoxButtons.YesNo,
+                                                 MessageBoxIcon.Question);
+
+            if (secim == DialogResult.Yes)
+            {
+                // Form1'in giriş ekranı olduğunu varsayıyorum
+                Form1 girisEkrani = new Form1();
+                girisEkrani.Show();
+
+                // Mevcut formu kapatıyoruz
+                this.Close();
+            }
+        }
+
+        private void textBox1_Enter(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "Kitap giriniz...") // Burası artık tutarlı
+            {
+                textBox1.Text = "";
+                textBox1.ForeColor = Color.Black;
+            }
+        }
+
+        // 3. Leave Olayını Düzelt
+        private void textBox1_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                textBox1.Text = "Kitap giriniz..."; // Burası artık tutarlı
+                textBox1.ForeColor = Color.Gray;
+            }
+        }
+
+        // 4. TextChanged Olayını Düzelt
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            // Arama kutusunun varsayılan metni ile aynı olup olmadığını kontrol et
+            if (textBox1.Text == "Kitap giriniz..." || string.IsNullOrWhiteSpace(textBox1.Text))
+            {
+                if (dgvKitaplar.DataSource is DataTable dt)
                 {
-                    MessageBox.Show("Bu kitap stokta yok.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    dt.DefaultView.RowFilter = "";
                 }
+                return;
+            }
+
+            if (dgvKitaplar.DataSource is DataTable dtFiltre)
+            {
+                string filtre = textBox1.Text.Replace("'", "''");
+                dtFiltre.DefaultView.RowFilter = string.Format("Ad LIKE '%{0}%' OR Yazar LIKE '%{0}%'", filtre);
             }
         }
     }

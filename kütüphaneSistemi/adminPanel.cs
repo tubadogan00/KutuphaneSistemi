@@ -1,12 +1,13 @@
-﻿using System;
+﻿using kütüphaneSistemi;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using kütüphaneSistemi;
-using System.Linq;
 namespace kütüphaneSistemi
 {
     public partial class adminPanel : Form
@@ -15,23 +16,20 @@ namespace kütüphaneSistemi
         public adminPanel()
         {
             InitializeComponent();
-        }
 
-        public class Kullanici
-        {
-            public string AdSoyad { get; set; }
-            public string Email { get; set; }
+            txtArama.Enter += txtArama_Enter;
+            txtArama.Leave += txtArama_Leave;
+
+            // Başlangıç durumu
+            txtArama.Text = "İsim giriniz...";
+            txtArama.ForeColor = Color.Gray;
         }
-        List<Kullanici> kullanicilar = new List<Kullanici>();
         private void adminPanel_Load(object sender, EventArgs e)
         {
             TemayiUygula();
 
-            // Kitaplar tablosu
-            dgvAdminKitaplar.DataSource = KutuphaneVeri.TumKitaplar;
-
-            // Kullanıcılar tablosu
-            dgvKullanicilar.DataSource = kullanicilar;
+            KitaplariGetir();
+            KullanicilariGetir();
         }
 
         private void TemayiUygula()
@@ -150,100 +148,94 @@ namespace kütüphaneSistemi
 
         private void btnKaydet_Click(object sender, EventArgs e)
         {
-            // 1. KİTAP ADI VE YAZAR KONTROLÜ (Sadece rakam girilmesini engelle)
-            if (txtKitapAdi.Text.Length > 0 && txtKitapAdi.Text.All(char.IsDigit))
-            {
-                MessageBox.Show("Kitap adı sadece rakamlardan oluşamaz!");
-                return;
-            }
-
-            if (txtYazar.Text.Length > 0 && txtYazar.Text.All(char.IsDigit))
-            {
-                MessageBox.Show("Yazar adı sadece rakamlardan oluşamaz!");
-                return;
-            }
-
-            if (txtTur.Text.Length > 0 && txtTur.Text.All(char.IsDigit))
-            {
-                MessageBox.Show("Tür adı sadece rakamlardan oluşamaz!");
-                return;
-            }
-
-            // 2. SAYISAL ALANLARIN KONTROLÜ (Harf girilmesini engelle)
+            // 1. Kontrollerini yap (Zaten yazmıştın, onlar kalsın)
             int stok, sayfa, yil;
-            if (!int.TryParse(txtStok.Text, out stok) ||
-                !int.TryParse(txtSayfa.Text, out sayfa) ||
-                !int.TryParse(txtYil.Text, out yil))
+            if (!int.TryParse(txtStok.Text, out stok) || !int.TryParse(txtSayfa.Text, out sayfa) || !int.TryParse(txtYil.Text, out yil))
             {
-                MessageBox.Show("Stok, Sayfa ve Yıl alanlarına sadece sayı girebilirsiniz!");
+                MessageBox.Show("Sayısal alanları kontrol ediniz!");
                 return;
             }
 
-            // 3. KAYDETME İŞLEMİ (Her şey kontrol edildi, artık güvenle ekle)
-            Kitap yeniKitap = new Kitap
+            // 2. Veritabanına Kaydet
+            try
             {
-                Ad = txtKitapAdi.Text,
-                Yazar = txtYazar.Text,
-                ISBN = txtISBN.Text,
-                YayinYili = yil,
-                Sayfa = sayfa,
-                Tur = txtTur.Text,
-                Stok = stok
-            };
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+                    // ID kısmını 'AUTO_INCREMENT' olduğu için yazmıyoruz, MySQL onu otomatik hallediyor
+                    string sorgu = "INSERT INTO Kitaplar (Ad, Yazar, ISBN, YayinYili, Sayfa, Tur, Stok) VALUES (@ad, @yazar, @isbn, @yil, @sayfa, @tur, @stok)";
 
-            KutuphaneVeri.TumKitaplar.Add(yeniKitap);
+                    MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                    cmd.Parameters.AddWithValue("@ad", txtKitapAdi.Text);
+                    cmd.Parameters.AddWithValue("@yazar", txtYazar.Text);
+                    cmd.Parameters.AddWithValue("@isbn", txtISBN.Text);
+                    cmd.Parameters.AddWithValue("@yil", yil);
+                    cmd.Parameters.AddWithValue("@sayfa", sayfa);
+                    cmd.Parameters.AddWithValue("@tur", txtTur.Text);
+                    cmd.Parameters.AddWithValue("@stok", stok);
 
-            // 4. TABLOYU GÜNCELLE
-            dgvAdminKitaplar.DataSource = null;
-            dgvAdminKitaplar.DataSource = KutuphaneVeri.TumKitaplar;
+                    cmd.ExecuteNonQuery(); // Veritabanına gönder
 
-            MessageBox.Show("Kitap başarıyla eklendi!");
+                    MessageBox.Show("Kitap veritabanına başarıyla eklendi!");
+
+                    // 3. Tabloyu Tazelemeyi unutma!
+                    KitaplariGetir();
+
+                    // 4. Kutuları temizle
+                    txtKitapAdi.Clear();
+                    txtYazar.Clear();
+                    // ... (diğer temizleme işlemlerin)
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Kayıt sırasında hata oluştu: " + ex.Message);
+            }
         }
 
         private void btnKitapSil_Click(object sender, EventArgs e)
         {
-            // 1. Önce bir satırın seçili olup olmadığını kontrol et
-            if (dgvAdminKitaplar.CurrentRow != null)
-            {
-                // 2. Kullanıcıdan onay al (Yanlışlıkla silmeyi engelle)
-                DialogResult onay = MessageBox.Show("Bu kitabı silmek istediğinize emin misiniz?",
-                                                    "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (onay == DialogResult.Yes)
-                {
-                    // 3. Seçili satırdaki veriyi al
-                    Kitap seciliKitap = (Kitap)dgvAdminKitaplar.CurrentRow.DataBoundItem;
-
-                    // 4. Listeden o kitabı kaldır
-                    KutuphaneVeri.TumKitaplar.Remove(seciliKitap);
-
-                    dgvAdminKitaplar.DataSource = null;
-                    dgvAdminKitaplar.DataSource = KutuphaneVeri.TumKitaplar;
-
-                    MessageBox.Show("Kitap başarıyla silindi.");
-                }
-            }
-            else
+            // 1. Seçili satır var mı kontrol et
+            if (dgvAdminKitaplar.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Lütfen silmek için bir kitap seçin.");
+                return;
+            }
+
+            // 2. Kullanıcıdan onay al
+            DialogResult onay = MessageBox.Show("Bu kitabı silmek istediğinize emin misiniz?",
+                                                "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (onay == DialogResult.Yes)
+            {
+                try
+                {
+                    // 3. Seçili satırdaki KitapID'yi al
+                    int seciliID = Convert.ToInt32(dgvAdminKitaplar.SelectedRows[0].Cells["KitapID"].Value);
+
+                    using (var con = KutuphaneVeri.Baglan())
+                    {
+                        con.Open();
+                        // 4. Veritabanından silme sorgusu (DELETE)
+                        string sorgu = "DELETE FROM Kitaplar WHERE KitapID = @id";
+
+                        MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                        cmd.Parameters.AddWithValue("@id", seciliID);
+
+                        cmd.ExecuteNonQuery(); // Komutu çalıştır
+
+                        MessageBox.Show("Kitap veritabanından silindi.");
+
+                        // 5. Tabloyu tazele
+                        KitaplariGetir();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Silme işlemi sırasında hata oluştu: " + ex.Message);
+                }
             }
         }
-
-        private void dgvAdminKitaplar_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void dgvAdminKitaplar_SelectionChanged(object sender, EventArgs e)
         {
             // Eğer seçili bir satır varsa
@@ -265,70 +257,82 @@ namespace kütüphaneSistemi
 
         private void btnKitapGuncelle_Click(object sender, EventArgs e)
         {
-            if (dgvAdminKitaplar.SelectedRows.Count > 0)
+            // 1. Seçili satır var mı kontrol et
+            if (dgvAdminKitaplar.SelectedRows.Count == 0)
             {
-                int seciliIndex = dgvAdminKitaplar.SelectedRows[0].Index;
+                MessageBox.Show("Lütfen güncellemek için bir kitap seçin.");
+                return;
+            }
 
-                // DEĞİŞİKLİK BURADA: Ortak havuzdaki veriyi güncelliyoruz
-                KutuphaneVeri.TumKitaplar[seciliIndex].Ad = txtKitapAdi.Text;
-                KutuphaneVeri.TumKitaplar[seciliIndex].Yazar = txtYazar.Text;
-                KutuphaneVeri.TumKitaplar[seciliIndex].ISBN = txtISBN.Text;
-                KutuphaneVeri.TumKitaplar[seciliIndex].YayinYili = int.Parse(txtYil.Text);
-                KutuphaneVeri.TumKitaplar[seciliIndex].Sayfa = int.Parse(txtSayfa.Text);
-                KutuphaneVeri.TumKitaplar[seciliIndex].Tur = txtTur.Text;
-                KutuphaneVeri.TumKitaplar[seciliIndex].Stok = int.Parse(txtStok.Text);
+            // 2. Seçili satırdaki KitapID değerini al
+            // Not: DataGridView'da KitapID sütununun görünür olduğundan emin ol
+            int seciliID = Convert.ToInt32(dgvAdminKitaplar.SelectedRows[0].Cells["KitapID"].Value);
 
-                // Tabloyu tekrar tazeliyoruz
-                dgvAdminKitaplar.DataSource = null;
-                dgvAdminKitaplar.DataSource = KutuphaneVeri.TumKitaplar;
+            // 3. Veritabanında güncelleme yap
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+                    string sorgu = "UPDATE Kitaplar SET Ad=@ad, Yazar=@yazar, ISBN=@isbn, YayinYili=@yil, Sayfa=@sayfa, Tur=@tur, Stok=@stok WHERE KitapID=@id";
 
-                MessageBox.Show("Kitap bilgileri güncellendi!");
+                    MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                    cmd.Parameters.AddWithValue("@ad", txtKitapAdi.Text);
+                    cmd.Parameters.AddWithValue("@yazar", txtYazar.Text);
+                    cmd.Parameters.AddWithValue("@isbn", txtISBN.Text);
+                    cmd.Parameters.AddWithValue("@yil", int.Parse(txtYil.Text));
+                    cmd.Parameters.AddWithValue("@sayfa", int.Parse(txtSayfa.Text));
+                    cmd.Parameters.AddWithValue("@tur", txtTur.Text);
+                    cmd.Parameters.AddWithValue("@stok", int.Parse(txtStok.Text));
+                    cmd.Parameters.AddWithValue("@id", seciliID);
+
+                    cmd.ExecuteNonQuery(); // Veritabanında güncelle
+
+                    MessageBox.Show("Kitap başarıyla güncellendi!");
+
+                    // 4. Tabloyu tazeleyerek değişiklikleri yansıt
+                    KitaplariGetir();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Güncelleme sırasında hata oluştu: " + ex.Message);
             }
         }
-
-        private void dgvKullanicilar_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void txtKullaniciAdi_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnKaydett_Click(object sender, EventArgs e)
         {
-            // 1. BOŞLUK KONTROLÜ: Alanlar boşsa işlemi durdur
             if (string.IsNullOrWhiteSpace(txtKullaniciAdi.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
             {
-                MessageBox.Show("Lütfen Ad Soyad ve Email alanlarını doldurunuz!", "Eksik Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return; // İşlemi burada kes
+                MessageBox.Show("Lütfen boş alan bırakmayın!");
+                return;
             }
 
-            // 2. KAYIT İŞLEMİ
-            Kullanici yeniKullanici = new Kullanici
+            try
             {
-                AdSoyad = txtKullaniciAdi.Text,
-                Email = txtEmail.Text
-            };
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+                    // Parametreli sorgu kullanarak SQL Injection saldırılarını engelliyoruz (Güvenli yöntem)
+                    string sorgu = "INSERT INTO Kullanicilar (AdSoyad, Email) VALUES (@ad, @email)";
+                    MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                    cmd.Parameters.AddWithValue("@ad", txtKullaniciAdi.Text);
+                    cmd.Parameters.AddWithValue("@email", txtEmail.Text);
 
-            kullanicilar.Add(yeniKullanici);
+                    cmd.ExecuteNonQuery(); // Komutu çalıştır
 
-            // 3. TABLOYU GÜNCELLE
-            dgvKullanicilar.DataSource = null;
-            dgvKullanicilar.DataSource = kullanicilar;
+                    MessageBox.Show("Kullanıcı veritabanına kaydedildi!");
 
-            // 4. TEMİZLEME: Kayıttan sonra kutuları boşalt ve odaklan
-            txtKullaniciAdi.Clear();
-            txtEmail.Clear();
-            txtKullaniciAdi.Focus();
+                    // Tabloyu tazele ki yeni kayıt hemen görünsün
+                    KullanicilariGetir();
 
-            MessageBox.Show("Kullanıcı başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtKullaniciAdi.Clear();
+                    txtEmail.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata oluştu: " + ex.Message);
+            }
         }
 
         private void btnKullaniciEkle_Click(object sender, EventArgs e)
@@ -339,110 +343,185 @@ namespace kütüphaneSistemi
             // İmleci tekrar en başa odakla (Kullanıcı hemen yazmaya başlayabilsin)
             txtKullaniciAdi.Focus();
         }
-
-        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void btnKullaniciSil_Click(object sender, EventArgs e)
         {
-            // 1. KONTROL: Tabloda seçili bir satır var mı?
-            if (dgvKullanicilar.SelectedRows.Count > 0)
+            if (dgvKullanicilar.SelectedRows.Count == 0)
             {
-                // 2. ONAY: Kullanıcıdan emin olup olmadığını sor
-                DialogResult onay = MessageBox.Show("Seçili kullanıcıyı silmek istediğinize emin misiniz?",
-                                                    "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (onay == DialogResult.Yes)
-                {
-                    // 3. SİLME İŞLEMİ
-                    // Seçili olan satırdaki veriyi al
-                    Kullanici seciliKullanici = (Kullanici)dgvKullanicilar.SelectedRows[0].DataBoundItem;
-
-                    // Listeden çıkart
-                    kullanicilar.Remove(seciliKullanici);
-
-                    // 4. TABLOYU GÜNCELLE
-                    dgvKullanicilar.DataSource = null;
-                    dgvKullanicilar.DataSource = kullanicilar;
-
-                    // 5. TEMİZLEME: Kutuları boşalt
-                    txtKullaniciAdi.Clear();
-                    txtEmail.Clear();
-
-                    MessageBox.Show("Kullanıcı başarıyla silindi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                MessageBox.Show("Lütfen silmek için bir kullanıcı seçin!");
+                return;
             }
-            else
+
+            DialogResult onay = MessageBox.Show("Bu kullanıcıyı silmek istediğinize emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (onay == DialogResult.Yes)
             {
-                // Satır seçilmediyse kullanıcıya uyar
-                MessageBox.Show("Lütfen silmek için listeden bir kullanıcı seçin!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                try
+                {
+                    // DataGridView'daki ID sütununu al (Sütun ismin 'KullaniciID' olmalı)
+                    int seciliID = Convert.ToInt32(dgvKullanicilar.SelectedRows[0].Cells["KullaniciID"].Value);
+
+                    using (var con = KutuphaneVeri.Baglan())
+                    {
+                        con.Open();
+                        string sorgu = "DELETE FROM Kullanicilar WHERE KullaniciID = @id";
+                        MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                        cmd.Parameters.AddWithValue("@id", seciliID);
+                        cmd.ExecuteNonQuery();
+
+                        MessageBox.Show("Kullanıcı silindi.");
+                        KullanicilariGetir(); // Tabloyu yenile
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
             }
         }
 
         private void dgvKullanicilar_SelectionChanged(object sender, EventArgs e)
         {
-            // Eğer tabloda seçili bir satır varsa
             if (dgvKullanicilar.SelectedRows.Count > 0)
             {
-                // Seçili olan satırı al
                 DataGridViewRow row = dgvKullanicilar.SelectedRows[0];
-
-                // "DataBoundItem" kullanarak seçili satırın içindeki "Kullanici" nesnesine ulaş
-                if (row.DataBoundItem is Kullanici seciliKullanici)
-                {
-                    // Verileri TextBox'lara aktar
-                    txtKullaniciAdi.Text = seciliKullanici.AdSoyad;
-                    txtEmail.Text = seciliKullanici.Email;
-                }
+                // Sütun isimlerinin veritabanındakiyle aynı olduğundan emin ol (Örn: "AdSoyad", "Email")
+                txtKullaniciAdi.Text = row.Cells["AdSoyad"].Value?.ToString();
+                txtEmail.Text = row.Cells["Email"].Value?.ToString();
             }
         }
 
         private void btnKullaniciGuncelle_Click(object sender, EventArgs e)
         {
-            // 1. KONTROL: Seçili satır var mı?
-            if (dgvKullanicilar.SelectedRows.Count > 0)
+            if (dgvKullanicilar.SelectedRows.Count == 0)
             {
-                // 2. KONTROL: Boş güncelleme yapmasın diye (Validation)
-                if (string.IsNullOrWhiteSpace(txtKullaniciAdi.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
+                MessageBox.Show("Lütfen bir kullanıcı seçin.");
+                return;
+            }
+
+            int seciliID = Convert.ToInt32(dgvKullanicilar.SelectedRows[0].Cells["KullaniciID"].Value);
+
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan())
                 {
-                    MessageBox.Show("Lütfen boş alan bırakmayın!");
-                    return;
+                    con.Open();
+                    string sorgu = "UPDATE Kullanicilar SET AdSoyad=@ad, Email=@email WHERE KullaniciID=@id";
+                    MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                    cmd.Parameters.AddWithValue("@ad", txtKullaniciAdi.Text);
+                    cmd.Parameters.AddWithValue("@email", txtEmail.Text);
+                    cmd.Parameters.AddWithValue("@id", seciliID);
+
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Kullanıcı güncellendi!");
+                    KullanicilariGetir(); // Tabloyu yenile
                 }
-
-                // 3. İNDEKSİ BUL: Seçili olan satırın listedeki yerini al
-                int seciliIndex = dgvKullanicilar.SelectedRows[0].Index;
-
-                // 4. GÜNCELLE: Listedeki veriyi değiştir
-                kullanicilar[seciliIndex].AdSoyad = txtKullaniciAdi.Text;
-                kullanicilar[seciliIndex].Email = txtEmail.Text;
-
-                // 5. TABLOYU TAZELE: Değişikliklerin ekrana yansıması için
-                dgvKullanicilar.DataSource = null;
-                dgvKullanicilar.DataSource = kullanicilar;
-
-                MessageBox.Show("Kullanıcı bilgileri başarıyla güncellendi!");
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Lütfen güncellemek için bir kullanıcı seçin.");
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+        }
+        private void KitaplariGetir()
+        {
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan()) // Yeni oluşturduğumuz sınıfı kullan
+                {
+                    con.Open();
+                    string sorgu = "SELECT * FROM Kitaplar";
+                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    dgvAdminKitaplar.DataSource = dt; // Tabloyu güncelle
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
+            }
+        }
+        private void KullanicilariGetir()
+        {
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+                    string sorgu = "SELECT * FROM Kullanicilar";
+                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    // Verileri tabloya aktar
+                    dgvKullanicilar.DataSource = dt;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Kullanıcılar getirilirken hata oluştu: " + ex.Message);
+            }
+        }
+        private void txtArama_TextChanged(object sender, EventArgs e)
+        {
+            if (dgvKullanicilar.DataSource is DataTable dt)
+            {
+                string filtre = txtArama.Text.Replace("'", "''"); // Tırnak işaretini güvenli hale getir
+
+                if (string.IsNullOrWhiteSpace(filtre))
+                {
+                    dt.DefaultView.RowFilter = ""; // Arama boşsa tüm verileri göster
+                }
+                else
+                {
+                    // İstersen sadece AdSoyad değil, KullaniciAdi gibi başka alanlarda da aratabilirsin:
+                    dt.DefaultView.RowFilter = string.Format("AdSoyad LIKE '%{0}%'", filtre);
+                }
             }
         }
 
-        private void userFormPanel_Paint(object sender, PaintEventArgs e)
+        private void txtArama_TextChanged_1(object sender, EventArgs e)
         {
 
         }
 
-        private void adminPanel_Load_1(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
+            // Kullanıcıya onay soralım
+            DialogResult secim = MessageBox.Show("Giriş ekranına dönmek istediğinize emin misiniz?",
+                                                 "Çıkış Onayı",
+                                                 MessageBoxButtons.YesNo,
+                                                 MessageBoxIcon.Question);
 
+            if (secim == DialogResult.Yes)
+            {
+                // 1. Giriş formunu (Form1) oluştur
+                Form1 girisEkrani = new Form1();
+
+                // 2. Giriş formunu göster
+                girisEkrani.Show();
+
+                // 3. Mevcut Admin Panelini kapat
+                this.Close();
+            }
         }
 
-        private void btnKullaniciGuncelle_Click_1(object sender, EventArgs e)
+        private void txtArama_Enter(object sender, EventArgs e)
         {
+            if (txtArama.Text == "İsim giriniz...")
+            {
+                txtArama.Text = "";
+                txtArama.ForeColor = Color.Black; // Yazı rengini normale çevir
+            }
+        }
 
+        private void txtArama_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtArama.Text))
+            {
+                txtArama.Text = "İsim giriniz...";
+                txtArama.ForeColor = Color.Gray; // Yazıyı gri yap
+            }
         }
     }
 }

@@ -32,6 +32,7 @@
             tabPage1 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
             groupBox1 = new GroupBox();
+            button1 = new Button();
             panel1 = new Panel();
             btnKitapEkle = new Button();
             btnKitapGuncelle = new Button();
@@ -54,21 +55,19 @@
             dgvAdminKitaplar = new DataGridView();
             tabPage2 = new TabPage();
             groupBox2 = new GroupBox();
+            lblkullaniciAra = new Label();
+            txtArama = new TextBox();
+            panel2 = new Panel();
+            btnKaydett = new Button();
+            btnKullaniciGuncelle = new Button();
+            btnKullaniciSil = new Button();
+            btnKullaniciEkle = new Button();
             lblEmail = new Label();
             lblAdSoyad = new Label();
             txtEmail = new TextBox();
             txtKullaniciAdi = new TextBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             dgvKullanicilar = new DataGridView();
-            panel2 = new Panel();
-            btnKaydett = new Button();
-            btnKaydett.Click += btnKaydett_Click;
-            btnKullaniciGuncelle = new Button();
-            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click;
-            btnKullaniciSil = new Button();
-            btnKullaniciSil.Click += btnKullaniciSil_Click;
-            btnKullaniciEkle = new Button();
-            btnKullaniciEkle.Click += btnKullaniciEkle_Click;
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -77,9 +76,9 @@
             ((System.ComponentModel.ISupportInitialize)dgvAdminKitaplar).BeginInit();
             tabPage2.SuspendLayout();
             groupBox2.SuspendLayout();
+            panel2.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvKullanicilar).BeginInit();
-            panel2.SuspendLayout();
             SuspendLayout();
             // 
             // tabControl1
@@ -103,7 +102,6 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "📚 Kitap Yönetimi";
             tabPage1.UseVisualStyleBackColor = true;
-            tabPage1.Click += tabPage1_Click;
             // 
             // tableLayoutPanel1
             // 
@@ -122,6 +120,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(panel1);
             groupBox1.Controls.Add(lblStok);
             groupBox1.Controls.Add(lblTur);
@@ -147,6 +146,19 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "Kitap Bilgileri";
             // 
+            // button1
+            // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            button1.BackColor = Color.CornflowerBlue;
+            button1.ForeColor = Color.White;
+            button1.Location = new Point(313, 692);
+            button1.Name = "button1";
+            button1.Size = new Size(150, 45);
+            button1.TabIndex = 14;
+            button1.Text = "Çıkış Yap";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click;
+            // 
             // panel1
             // 
             panel1.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -154,7 +166,7 @@
             panel1.Controls.Add(btnKitapGuncelle);
             panel1.Controls.Add(btnKaydet);
             panel1.Controls.Add(btnKitapSil);
-            panel1.Location = new Point(315, 584);
+            panel1.Location = new Point(310, 479);
             panel1.Name = "panel1";
             panel1.Size = new Size(180, 220);
             panel1.TabIndex = 6;
@@ -340,7 +352,6 @@
             dgvAdminKitaplar.RowHeadersWidth = 51;
             dgvAdminKitaplar.Size = new Size(894, 755);
             dgvAdminKitaplar.TabIndex = 0;
-            dgvAdminKitaplar.CellContentClick += dgvAdminKitaplar_CellContentClick;
             dgvAdminKitaplar.SelectionChanged += dgvAdminKitaplar_SelectionChanged;
             // 
             // tabPage2
@@ -358,6 +369,8 @@
             // groupBox2
             // 
             groupBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(lblkullaniciAra);
+            groupBox2.Controls.Add(txtArama);
             groupBox2.Controls.Add(panel2);
             groupBox2.Controls.Add(lblEmail);
             groupBox2.Controls.Add(lblAdSoyad);
@@ -372,6 +385,83 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Kullanıcı Bilgileri";
             // 
+            // lblkullaniciAra
+            // 
+            lblkullaniciAra.AutoSize = true;
+            lblkullaniciAra.Location = new Point(13, 259);
+            lblkullaniciAra.Name = "lblkullaniciAra";
+            lblkullaniciAra.Size = new Size(150, 25);
+            lblkullaniciAra.TabIndex = 6;
+            lblkullaniciAra.Text = "🔍Kullanıcı Ara:";
+            // 
+            // txtArama
+            // 
+            txtArama.Location = new Point(193, 252);
+            txtArama.Name = "txtArama";
+            txtArama.Size = new Size(180, 32);
+            txtArama.TabIndex = 5;
+            txtArama.TextChanged += txtArama_TextChanged;
+            // 
+            // panel2
+            // 
+            panel2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            panel2.Controls.Add(btnKaydett);
+            panel2.Controls.Add(btnKullaniciGuncelle);
+            panel2.Controls.Add(btnKullaniciSil);
+            panel2.Controls.Add(btnKullaniciEkle);
+            panel2.Location = new Point(285, 520);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(180, 220);
+            panel2.TabIndex = 4;
+            // 
+            // btnKaydett
+            // 
+            btnKaydett.BackColor = Color.CornflowerBlue;
+            btnKaydett.ForeColor = Color.White;
+            btnKaydett.Location = new Point(3, 139);
+            btnKaydett.Name = "btnKaydett";
+            btnKaydett.Size = new Size(174, 40);
+            btnKaydett.TabIndex = 5;
+            btnKaydett.Text = "Kaydet";
+            btnKaydett.UseVisualStyleBackColor = false;
+            btnKaydett.Click += btnKaydett_Click;
+            // 
+            // btnKullaniciGuncelle
+            // 
+            btnKullaniciGuncelle.BackColor = Color.CornflowerBlue;
+            btnKullaniciGuncelle.ForeColor = Color.White;
+            btnKullaniciGuncelle.Location = new Point(3, 93);
+            btnKullaniciGuncelle.Name = "btnKullaniciGuncelle";
+            btnKullaniciGuncelle.Size = new Size(177, 40);
+            btnKullaniciGuncelle.TabIndex = 4;
+            btnKullaniciGuncelle.Text = "Kullanıcı Güncelle";
+            btnKullaniciGuncelle.UseVisualStyleBackColor = false;
+            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click;
+            // 
+            // btnKullaniciSil
+            // 
+            btnKullaniciSil.BackColor = Color.CornflowerBlue;
+            btnKullaniciSil.ForeColor = Color.White;
+            btnKullaniciSil.Location = new Point(3, 47);
+            btnKullaniciSil.Name = "btnKullaniciSil";
+            btnKullaniciSil.Size = new Size(174, 40);
+            btnKullaniciSil.TabIndex = 3;
+            btnKullaniciSil.Text = "Kullanıcı Sil";
+            btnKullaniciSil.UseVisualStyleBackColor = false;
+            btnKullaniciSil.Click += btnKullaniciSil_Click;
+            // 
+            // btnKullaniciEkle
+            // 
+            btnKullaniciEkle.BackColor = Color.CornflowerBlue;
+            btnKullaniciEkle.ForeColor = Color.White;
+            btnKullaniciEkle.Location = new Point(3, 3);
+            btnKullaniciEkle.Name = "btnKullaniciEkle";
+            btnKullaniciEkle.Size = new Size(174, 40);
+            btnKullaniciEkle.TabIndex = 2;
+            btnKullaniciEkle.Text = "Kullanıcı Ekle";
+            btnKullaniciEkle.UseVisualStyleBackColor = false;
+            btnKullaniciEkle.Click += btnKullaniciEkle_Click;
+            // 
             // lblEmail
             // 
             lblEmail.AutoSize = true;
@@ -381,7 +471,6 @@
             lblEmail.Size = new Size(59, 23);
             lblEmail.TabIndex = 3;
             lblEmail.Text = "Email:";
-            lblEmail.Click += label2_Click;
             // 
             // lblAdSoyad
             // 
@@ -406,7 +495,6 @@
             txtKullaniciAdi.Name = "txtKullaniciAdi";
             txtKullaniciAdi.Size = new Size(180, 32);
             txtKullaniciAdi.TabIndex = 0;
-            txtKullaniciAdi.TextChanged += txtKullaniciAdi_TextChanged;
             // 
             // tableLayoutPanel2
             // 
@@ -422,77 +510,18 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(1386, 761);
             tableLayoutPanel2.TabIndex = 4;
-            tableLayoutPanel2.Paint += tableLayoutPanel2_Paint;
             // 
             // dgvKullanicilar
             // 
+            dgvKullanicilar.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             dgvKullanicilar.BackgroundColor = SystemColors.GradientActiveCaption;
             dgvKullanicilar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvKullanicilar.Dock = DockStyle.Fill;
             dgvKullanicilar.Location = new Point(3, 3);
             dgvKullanicilar.Name = "dgvKullanicilar";
             dgvKullanicilar.RowHeadersWidth = 51;
             dgvKullanicilar.Size = new Size(894, 755);
             dgvKullanicilar.TabIndex = 0;
-            dgvKullanicilar.CellContentClick += dgvKullanicilar_CellContentClick;
             dgvKullanicilar.SelectionChanged += dgvKullanicilar_SelectionChanged;
-            // 
-            // panel2
-            // 
-            panel2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            panel2.Controls.Add(btnKaydett);
-            panel2.Controls.Add(btnKullaniciGuncelle);
-            panel2.Controls.Add(btnKullaniciSil);
-            panel2.Controls.Add(btnKullaniciEkle);
-            panel2.Location = new Point(285, 520);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(180, 220);
-            panel2.TabIndex = 4;
-            // 
-            // btnKaydett
-            // 
-            btnKaydett.BackColor = Color.CornflowerBlue;
-            btnKaydett.ForeColor = Color.White;
-            btnKaydett.Location = new Point(3, 139);
-            btnKaydett.Name = "btnKaydett";
-            btnKaydett.Size = new Size(174, 40);
-            btnKaydett.TabIndex = 5;
-            btnKaydett.Text = "Kaydet";
-            btnKaydett.UseVisualStyleBackColor = false;
-            // 
-            // btnKullaniciGuncelle
-            // 
-            btnKullaniciGuncelle.BackColor = Color.CornflowerBlue;
-            btnKullaniciGuncelle.ForeColor = Color.White;
-            btnKullaniciGuncelle.Location = new Point(3, 93);
-            btnKullaniciGuncelle.Name = "btnKullaniciGuncelle";
-            btnKullaniciGuncelle.Size = new Size(177, 40);
-            btnKullaniciGuncelle.TabIndex = 4;
-            btnKullaniciGuncelle.Text = "Kullanıcı Güncelle";
-            btnKullaniciGuncelle.UseVisualStyleBackColor = false;
-            btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click_1;
-            // 
-            // btnKullaniciSil
-            // 
-            btnKullaniciSil.BackColor = Color.CornflowerBlue;
-            btnKullaniciSil.ForeColor = Color.White;
-            btnKullaniciSil.Location = new Point(3, 47);
-            btnKullaniciSil.Name = "btnKullaniciSil";
-            btnKullaniciSil.Size = new Size(174, 40);
-            btnKullaniciSil.TabIndex = 3;
-            btnKullaniciSil.Text = "Kullanıcı Sil";
-            btnKullaniciSil.UseVisualStyleBackColor = false;
-            // 
-            // btnKullaniciEkle
-            // 
-            btnKullaniciEkle.BackColor = Color.CornflowerBlue;
-            btnKullaniciEkle.ForeColor = Color.White;
-            btnKullaniciEkle.Location = new Point(3, 3);
-            btnKullaniciEkle.Name = "btnKullaniciEkle";
-            btnKullaniciEkle.Size = new Size(174, 40);
-            btnKullaniciEkle.TabIndex = 2;
-            btnKullaniciEkle.Text = "Kullanıcı Ekle";
-            btnKullaniciEkle.UseVisualStyleBackColor = false;
             // 
             // adminPanel
             // 
@@ -515,9 +544,9 @@
             tabPage2.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            panel2.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvKullanicilar).EndInit();
-            panel2.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -560,5 +589,8 @@
         private Button btnKullaniciGuncelle;
         private Button btnKullaniciSil;
         private Button btnKullaniciEkle;
+        private TextBox txtArama;
+        private Label lblkullaniciAra;
+        private Button button1;
     }
 }
