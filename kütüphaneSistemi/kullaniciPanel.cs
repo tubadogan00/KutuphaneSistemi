@@ -9,11 +9,11 @@ namespace kütüphaneSistemi
 {
 
     [System.ComponentModel.DesignerCategory("Form")]
-    public partial class Form2 : Form
+    public partial class kullaniciPanel : Form
     {
 
 
-        public Form2()
+        public kullaniciPanel()
         {
             InitializeComponent();
 
@@ -168,7 +168,7 @@ namespace kütüphaneSistemi
             if (secim == DialogResult.Yes)
             {
                 // Form1'in giriş ekranı olduğunu varsayıyorum
-                Form1 girisEkrani = new Form1();
+                girisPanel girisEkrani = new girisPanel();
                 girisEkrani.Show();
 
                 // Mevcut formu kapatıyoruz

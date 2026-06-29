@@ -496,7 +496,7 @@ namespace kütüphaneSistemi
             if (secim == DialogResult.Yes)
             {
                 // 1. Giriş formunu (Form1) oluştur
-                Form1 girisEkrani = new Form1();
+                girisPanel girisEkrani = new girisPanel();
 
                 // 2. Giriş formunu göster
                 girisEkrani.Show();

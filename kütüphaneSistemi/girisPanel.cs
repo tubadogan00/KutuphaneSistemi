@@ -4,12 +4,12 @@ using System.Windows.Forms;
 
 namespace kütüphaneSistemi
 {
-    public partial class Form1 : Form
+    public partial class girisPanel : Form
     {
         // Form2 ile aynı olan ana renk tonu
         private Color anaMavi = Color.FromArgb(46, 82, 114);
 
-        public Form1()
+        public girisPanel()
         {
             InitializeComponent();
             Form1_Load(this, EventArgs.Empty); // Tasarımı hemen uygula
@@ -50,7 +50,7 @@ namespace kütüphaneSistemi
             // 2. Normal Kullanıcı Kontrolü
             else if (kullaniciAdi == "user" && sifre == "user123")
             {
-                Form2 userForm = new Form2(); // Form2'yi kullanıcı paneli olarak açıyoruz
+                kullaniciPanel userForm = new kullaniciPanel(); // Form2'yi kullanıcı paneli olarak açıyoruz
                 userForm.Show();
                 this.Hide();
             }

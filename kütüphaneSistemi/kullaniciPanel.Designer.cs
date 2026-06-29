@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 namespace kütüphaneSistemi
 {
-    partial class Form2
+    partial class kullaniciPanel
     {
         private System.ComponentModel.IContainer components = null;
 

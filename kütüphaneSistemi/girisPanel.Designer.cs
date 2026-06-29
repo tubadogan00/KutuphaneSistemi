@@ -1,6 +1,6 @@
 ﻿namespace kütüphaneSistemi
 {
-    partial class Form1
+    partial class girisPanel
     {
         /// <summary>
         ///  Required designer variable.
