@@ -33,6 +33,7 @@
             txtEmail = new TextBox();
             txtSifre = new TextBox();
             btnUyeOl = new Button();
+            btnGeri = new Button();
             SuspendLayout();
             // 
             // label1
@@ -88,11 +89,26 @@
             btnUyeOl.UseVisualStyleBackColor = false;
             btnUyeOl.Click += btnUyeOl_Click;
             // 
+            // btnGeri
+            // 
+            btnGeri.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnGeri.BackColor = Color.CornflowerBlue;
+            btnGeri.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 162);
+            btnGeri.ForeColor = Color.White;
+            btnGeri.Location = new Point(617, 21);
+            btnGeri.Name = "btnGeri";
+            btnGeri.Size = new Size(160, 29);
+            btnGeri.TabIndex = 5;
+            btnGeri.Text = "Giriş Ekranına Dön";
+            btnGeri.UseVisualStyleBackColor = false;
+            btnGeri.Click += btnGeri_Click;
+            // 
             // uyeOlForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnGeri);
             Controls.Add(label1);
             Controls.Add(txtSifre);
             Controls.Add(btnUyeOl);
@@ -112,5 +128,6 @@
         private TextBox txtEmail;
         private TextBox txtSifre;
         private Button btnUyeOl;
+        private Button btnGeri;
     }
 }

@@ -151,7 +151,6 @@ namespace kütüphaneSistemi
 
         private void btnKaydet_Click(object sender, EventArgs e)
         {
-            // 1. Kontrollerini yap (Zaten yazmıştın, onlar kalsın)
             int stok, sayfa, yil;
             if (!int.TryParse(txtStok.Text, out stok) || !int.TryParse(txtSayfa.Text, out sayfa) || !int.TryParse(txtYil.Text, out yil))
             {
@@ -187,7 +186,6 @@ namespace kütüphaneSistemi
                     // 4. Kutuları temizle
                     txtKitapAdi.Clear();
                     txtYazar.Clear();
-                    // ... (diğer temizleme işlemlerin)
                 }
             }
             catch (Exception ex)
@@ -281,7 +279,6 @@ namespace kütüphaneSistemi
             }
 
             // 2. Seçili satırdaki KitapID değerini al
-            // Not: DataGridView'da KitapID sütununun görünür olduğundan emin ol
             int seciliID = Convert.ToInt32(dgvAdminKitaplar.SelectedRows[0].Cells["KitapID"].Value);
 
             // 3. Veritabanında güncelleme yap
@@ -338,8 +335,6 @@ namespace kütüphaneSistemi
                     cmd.ExecuteNonQuery(); // Komutu çalıştır
 
                     MessageBox.Show("Kullanıcı veritabanına kaydedildi!");
-
-                    // Tabloyu tazele ki yeni kayıt hemen görünsün
                     KullanicilariGetir();
 
                     txtKullaniciAdi.Clear();
@@ -374,7 +369,6 @@ namespace kütüphaneSistemi
             {
                 try
                 {
-                    // DataGridView'daki ID sütununu al (Sütun ismin 'KullaniciID' olmalı)
                     int seciliID = Convert.ToInt32(dgvKullanicilar.SelectedRows[0].Cells["KullaniciID"].Value);
 
                     using (var con = KutuphaneVeri.Baglan())
@@ -401,7 +395,6 @@ namespace kütüphaneSistemi
             if (dgvKullanicilar.SelectedRows.Count > 0)
             {
                 DataGridViewRow row = dgvKullanicilar.SelectedRows[0];
-                // Sütun isimlerinin veritabanındakiyle aynı olduğundan emin ol (Örn: "AdSoyad", "Email")
                 txtKullaniciAdi.Text = row.Cells["AdSoyad"].Value?.ToString();
                 txtEmail.Text = row.Cells["Email"].Value?.ToString();
             }
@@ -492,7 +485,6 @@ namespace kütüphaneSistemi
                 }
                 else
                 {
-                    // İstersen sadece AdSoyad değil, KullaniciAdi gibi başka alanlarda da aratabilirsin:
                     dt.DefaultView.RowFilter = string.Format("AdSoyad LIKE '%{0}%'", filtre);
                 }
             }
@@ -562,37 +554,6 @@ namespace kütüphaneSistemi
                 MessageBox.Show("Listeleme hatası: " + ex.Message);
             }
         }
-        private void btnOnayla_Click(object sender, EventArgs e)
-        {
-            if (dgvOnayBekleyenler.SelectedRows.Count == 0) return;
-
-            int oduncID = Convert.ToInt32(dgvOnayBekleyenler.SelectedRows[0].Cells["OduncID"].Value);
-            int kitapID = Convert.ToInt32(dgvOnayBekleyenler.SelectedRows[0].Cells["KitapID"].Value);
-
-            using (var con = KutuphaneVeri.Baglan())
-            {
-                con.Open();
-
-                // 1. Durumu 1 (Ödünçte) yap
-                string sqlOnay = "UPDATE OduncKitaplar SET OnayDurumu = 1 WHERE OduncID = @id";
-                // 2. Stok düş
-                string sqlStok = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @kitapid";
-
-                MySqlCommand cmd1 = new MySqlCommand(sqlOnay, con);
-                cmd1.Parameters.AddWithValue("@id", oduncID);
-                cmd1.ExecuteNonQuery();
-
-                MySqlCommand cmd2 = new MySqlCommand(sqlStok, con);
-                cmd2.Parameters.AddWithValue("@kitapid", kitapID);
-                cmd2.ExecuteNonQuery();
-
-                MessageBox.Show("İstek onaylandı!");
-                // Listeleri güncelle
-                OnayBekleyenleriGetir();
-                AktifOduncleriGetir();
-            }
-        }
-        // 1. Onay bekleyenleri (Durum 0) getiren metot
         private void OnayBekleyenleriGetir()
         {
             try
@@ -631,19 +592,32 @@ namespace kütüphaneSistemi
         // 2. Aktif ödünçte olanları (Durum 1) getiren metot
         private void AktifOduncleriGetir()
         {
-            using (var con = KutuphaneVeri.Baglan())
+            try
             {
-                con.Open();
-                string sorgu = @"SELECT O.OduncID, O.KitapID, K.AdSoyad, Kit.Ad AS KitapAdi, O.VerilisTarihi 
-                         FROM OduncKitaplar O
-                         JOIN Kullanicilar K ON O.KullaniciID = K.KullaniciID
-                         JOIN Kitaplar Kit ON O.KitapID = Kit.KitapID
-                         WHERE O.OnayDurumu = 1";
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+                    string sorgu = @"SELECT O.OduncID, O.KitapID, K.AdSoyad, Kit.Ad AS KitapAdi, O.VerilisTarihi 
+                             FROM OduncKitaplar O
+                             JOIN Kullanicilar K ON O.KullaniciID = K.KullaniciID
+                             JOIN Kitaplar Kit ON O.KitapID = Kit.KitapID
+                             WHERE O.OnayDurumu = 1";
 
-                MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dgvOduncTakip.DataSource = dt; // Buradaki ismin tasarımındakiyle aynı olmalı
+                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    // Buraya dikkat: Eğer dgvOduncTakip boş geliyorsa 
+                    // veritabanında OnayDurumu = 1 olan kayıt yok demektir.
+                    dgvOduncTakip.DataSource = dt;
+
+                    // Debug için kaç kayıt geldiğini görelim:
+                    Console.WriteLine("Aktif ödünç sayısı: " + dt.Rows.Count);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Aktifler listelenirken hata: " + ex.Message);
             }
         }
 
@@ -655,12 +629,118 @@ namespace kütüphaneSistemi
 
         private void btnTeslimAl_Click(object sender, EventArgs e)
         {
+            if (dgvOduncTakip.SelectedRows.Count == 0) return;
 
+            int oduncID = Convert.ToInt32(dgvOduncTakip.SelectedRows[0].Cells["OduncID"].Value);
+            int kitapID = Convert.ToInt32(dgvOduncTakip.SelectedRows[0].Cells["KitapID"].Value);
+
+            using (var con = KutuphaneVeri.Baglan())
+            {
+                con.Open();
+                // 1. Ödünç tablosundan sil (veya Durum=2 yap)
+                string sqlIade = "DELETE FROM OduncKitaplar WHERE OduncID = @id";
+                // 2. Stok artır
+                string sqlStok = "UPDATE Kitaplar SET Stok = Stok + 1 WHERE KitapID = @kitapid";
+
+                MySqlCommand cmd1 = new MySqlCommand(sqlIade, con);
+                cmd1.Parameters.AddWithValue("@id", oduncID);
+                cmd1.ExecuteNonQuery();
+
+                MySqlCommand cmd2 = new MySqlCommand(sqlStok, con);
+                cmd2.Parameters.AddWithValue("@kitapid", kitapID);
+                cmd2.ExecuteNonQuery();
+            }
+
+            MessageBox.Show("Kitap teslim alındı ve stok güncellendi.");
+            AktifOduncleriGetir(); // Listeyi yenile
         }
 
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnOnayla_Click(object sender, EventArgs e)
+        {
+            if (dgvOnayBekleyenler.SelectedRows.Count == 0) return;
+
+            int oduncID = Convert.ToInt32(dgvOnayBekleyenler.SelectedRows[0].Cells["OduncID"].Value);
+            int kitapID = Convert.ToInt32(dgvOnayBekleyenler.SelectedRows[0].Cells["KitapID"].Value);
+
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
+
+                    // 1. Durumu güncelle
+                    string sqlOnay = "UPDATE OduncKitaplar SET OnayDurumu = 1 WHERE OduncID = @id";
+                    MySqlCommand cmd1 = new MySqlCommand(sqlOnay, con);
+                    cmd1.Parameters.AddWithValue("@id", oduncID);
+                    int sonuc1 = cmd1.ExecuteNonQuery();
+
+                    // 2. Stok düş
+                    string sqlStok = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @kitapid";
+                    MySqlCommand cmd2 = new MySqlCommand(sqlStok, con);
+                    cmd2.Parameters.AddWithValue("@kitapid", kitapID);
+                    int sonuc2 = cmd2.ExecuteNonQuery();
+
+                    if (sonuc1 > 0)
+                    {
+                        MessageBox.Show("Veritabanı güncellendi! Onaylandı.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Veritabanı güncellenemedi, sorgu hata vermiş olabilir.");
+                    }
+                }
+
+                // Listeleri tazele
+                OnayBekleyenleriGetir();
+                AktifOduncleriGetir();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("HATA OLUŞTU: " + ex.Message);
+            }
+        }
+        private void btnReddet_Click(object sender, EventArgs e)
+        {
+            if (dgvOnayBekleyenler.SelectedRows.Count == 0) return;
+
+            int oduncID = Convert.ToInt32(dgvOnayBekleyenler.SelectedRows[0].Cells["OduncID"].Value);
+
+            using (var con = KutuphaneVeri.Baglan())
+            {
+                con.Open();
+                string sqlRed = "DELETE FROM OduncKitaplar WHERE OduncID = @id";
+
+                MySqlCommand cmd = new MySqlCommand(sqlRed, con);
+                cmd.Parameters.AddWithValue("@id", oduncID);
+                cmd.ExecuteNonQuery();
+            }
+
+            MessageBox.Show("İstek reddedildi.");
+            OnayBekleyenleriGetir();
+        }
+
+        private void txtOduncArama_TextChanged(object sender, EventArgs e)
+        {
+            // dgvOduncTakip'in veri kaynağını al
+            if (dgvOduncTakip.DataSource is DataTable dt)
+            {
+                string filtre = txtOduncArama.Text.Replace("'", "''");
+
+                if (string.IsNullOrWhiteSpace(filtre) || filtre == "İsim giriniz...")
+                {
+                    dt.DefaultView.RowFilter = "";
+                }
+                else
+                {
+                    string filterExpression = string.Format("AdSoyad LIKE '%{0}%' OR KitapAdi LIKE '%{0}%'", filtre);
+                    dt.DefaultView.RowFilter = filterExpression;
+                }
+            }
         }
     }
 }

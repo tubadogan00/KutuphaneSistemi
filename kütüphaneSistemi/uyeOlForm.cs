@@ -63,5 +63,14 @@ namespace kütüphaneSistemi
         {
 
         }
+
+        private void btnGeri_Click(object sender, EventArgs e)
+        {
+            girisPanel girisEkrani = new girisPanel();
+            girisEkrani.Show();
+
+            // Üye ol formunu kapat
+            this.Close();
+        }
     }
 }

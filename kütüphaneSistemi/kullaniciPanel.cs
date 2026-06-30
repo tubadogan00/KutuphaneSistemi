@@ -20,64 +20,57 @@ namespace kütüphaneSistemi
             textBox1.Enter += textBox1_Enter;
             textBox1.Leave += textBox1_Leave;
 
-            textBox1.Text = "Kitap giriniz..."; // Burayı düzelttik
+            textBox1.Text = "Kitap giriniz...";
             textBox1.ForeColor = Color.Gray;
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
             TemayiUygula();
-
-            // 1. Sütunları BİR KEZ burada tanımla (yoksa)
-            if (dgvOduncAlinanlar.Columns.Count == 0)
-            {
-                dgvOduncAlinanlar.Columns.Add("KitapAdi", "Kitap Adı");
-                dgvOduncAlinanlar.Columns.Add("ISBN", "ISBN");
-                dgvOduncAlinanlar.Columns.Add("AlisTarihi", "Alınma Tarihi");
-                dgvOduncAlinanlar.Columns.Add("TeslimTarihi", "Teslim Tarihi");
-            }
-
             KitaplariGetirVeGoster();
             OduncAlinanlariGetir(); // Veritabanından verileri çek ve dgv'ye bas
         }
         private void OduncAlinanlariGetir()
-{
-    try
-    {
-        using (var con = KutuphaneVeri.Baglan())
         {
-            con.Open();
+            try
+            {
+                using (var con = KutuphaneVeri.Baglan())
+                {
+                    con.Open();
                     string sorgu = @"SELECT k.Ad, k.ISBN, o.VerilisTarihi, o.TeslimTarihi 
                              FROM OduncKitaplar o 
                              INNER JOIN Kitaplar k ON o.KitapID = k.KitapID 
-                             WHERE o.KullaniciID = @kid";
+                             WHERE o.KullaniciID = @kid AND o.OnayDurumu = 1";
 
-                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+                    MySqlCommand cmd = new MySqlCommand(sorgu, con);
+                    cmd.Parameters.Add("@kid", MySqlDbType.Int32).Value = AktifKullanici.ID;
 
-            // SADECE SATIRLARI TEMİZLE
-            dgvOduncAlinanlar.Rows.Clear(); 
-            
-            foreach (DataRow row in dt.Rows)
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    // Veriyi DataGridView'a doğrudan bağla
+                    dgvOduncAlinanlar.DataSource = dt;
+                    if (dgvOduncAlinanlar.Columns.Count >= 4)
+                    {
+                        dgvOduncAlinanlar.Columns["Ad"].HeaderText = "Kitap Adı";
+                        dgvOduncAlinanlar.Columns["ISBN"].HeaderText = "ISBN";
+                        dgvOduncAlinanlar.Columns["VerilisTarihi"].HeaderText = "Veriliş Tarihi";
+                        dgvOduncAlinanlar.Columns["TeslimTarihi"].HeaderText = "Teslim Tarihi";
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                dgvOduncAlinanlar.Rows.Add(row["Ad"], row["ISBN"],
-                    Convert.ToDateTime(row["VerilisTarihi"]).ToString("dd.MM.yyyy"),
-                    Convert.ToDateTime(row["TeslimTarihi"]).ToString("dd.MM.yyyy"));
+                MessageBox.Show("Hata: " + ex.Message);
             }
         }
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show("Ödünç listesi yüklenirken hata: " + ex.Message);
-    }
-}
 
         private void KitaplariGetirVeGoster()
         {
             try
             {
-                using (var con = KutuphaneVeri.Baglan()) // Ortak bağlantı sınıfın
+                using (var con = KutuphaneVeri.Baglan())
                 {
                     con.Open();
                     string sorgu = "SELECT * FROM Kitaplar";
@@ -141,16 +134,17 @@ namespace kütüphaneSistemi
                 MessageBox.Show("Bu kitap şu an stokta yok!");
                 return;
             }
+            if (stok == 1)
+            {
+                MessageBox.Show("Sistem gereği bu son kopya referans kitap olarak kütüphane içinde saklanmak zorundadır. Ödünç verilemez.");
+                return;
+            }
 
             try
             {
                 using (var con = KutuphaneVeri.Baglan())
                 {
                     con.Open();
-
-                    // 1. KONTROL: Bu kitabı zaten ödünç almış ve iade etmemiş mi?
-                    // "TeslimTarihi IS NULL" yerine "OnayDurumu < 2" kullanmak daha garantidir.
-                    // (0: Onay Bekliyor, 1: Elinde, 2: Teslim Edildi)
                     string kontrolSorgusu = "SELECT COUNT(*) FROM OduncKitaplar WHERE KitapID = @id AND KullaniciID = @kid AND OnayDurumu < 2";
 
                     MySqlCommand cmdKontrol = new MySqlCommand(kontrolSorgusu, con);
@@ -176,9 +170,6 @@ namespace kütüphaneSistemi
                     cmd2.ExecuteNonQuery();
 
                     MessageBox.Show($"{kitapAdi} için ödünç alma isteğiniz admin onayına gönderildi.");
-
-                    // İsteğe bağlı: Tabloyu güncelleyerek stok bilgisini veya durumu tazeleyebilirsin
-                    // KitaplariListele(); 
                 }
             }
             catch (Exception ex)
@@ -197,7 +188,6 @@ namespace kütüphaneSistemi
 
             if (secim == DialogResult.Yes)
             {
-                // Form1'in giriş ekranı olduğunu varsayıyorum
                 girisPanel girisEkrani = new girisPanel();
                 girisEkrani.Show();
 

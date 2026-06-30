@@ -598,6 +598,7 @@
             btnOnayla.TabIndex = 3;
             btnOnayla.Text = "Onayla";
             btnOnayla.UseVisualStyleBackColor = false;
+            btnOnayla.Click += btnOnayla_Click;
             // 
             // txtOduncArama
             // 
@@ -605,6 +606,7 @@
             txtOduncArama.Name = "txtOduncArama";
             txtOduncArama.Size = new Size(125, 27);
             txtOduncArama.TabIndex = 1;
+            txtOduncArama.TextChanged += txtOduncArama_TextChanged;
             // 
             // btnReddet
             // 
@@ -618,6 +620,7 @@
             btnReddet.TabIndex = 6;
             btnReddet.Text = "Reddet";
             btnReddet.UseVisualStyleBackColor = false;
+            btnReddet.Click += btnReddet_Click;
             // 
             // dgvOduncTakip
             // 

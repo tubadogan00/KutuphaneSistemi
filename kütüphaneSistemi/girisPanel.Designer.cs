@@ -60,7 +60,7 @@
             btnGiris.FlatStyle = FlatStyle.Flat;
             btnGiris.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnGiris.ForeColor = Color.White;
-            btnGiris.Location = new Point(332, 286);
+            btnGiris.Location = new Point(361, 273);
             btnGiris.Name = "btnGiris";
             btnGiris.Size = new Size(94, 29);
             btnGiris.TabIndex = 2;
@@ -95,7 +95,7 @@
             btnUyeOl.FlatStyle = FlatStyle.Flat;
             btnUyeOl.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnUyeOl.ForeColor = Color.White;
-            btnUyeOl.Location = new Point(332, 331);
+            btnUyeOl.Location = new Point(361, 321);
             btnUyeOl.Name = "btnUyeOl";
             btnUyeOl.Size = new Size(94, 29);
             btnUyeOl.TabIndex = 5;
