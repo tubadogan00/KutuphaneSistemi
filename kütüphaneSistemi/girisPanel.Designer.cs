@@ -33,6 +33,7 @@
             btnGiris = new Button();
             label1 = new Label();
             label2 = new Label();
+            btnUyeOl = new Button();
             SuspendLayout();
             // 
             // txtKullaniciAdi
@@ -55,23 +56,27 @@
             // btnGiris
             // 
             btnGiris.Anchor = AnchorStyles.None;
+            btnGiris.BackColor = Color.CornflowerBlue;
+            btnGiris.FlatStyle = FlatStyle.Flat;
+            btnGiris.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnGiris.ForeColor = Color.White;
             btnGiris.Location = new Point(332, 286);
             btnGiris.Name = "btnGiris";
             btnGiris.Size = new Size(94, 29);
             btnGiris.TabIndex = 2;
             btnGiris.Text = "Giriş Yap";
-            btnGiris.UseVisualStyleBackColor = true;
+            btnGiris.UseVisualStyleBackColor = false;
             btnGiris.Click += btnGiris_Click;
             // 
             // label1
             // 
             label1.Anchor = AnchorStyles.None;
             label1.AutoSize = true;
-            label1.Location = new Point(261, 96);
+            label1.Location = new Point(307, 96);
             label1.Name = "label1";
-            label1.Size = new Size(95, 20);
+            label1.Size = new Size(49, 20);
             label1.TabIndex = 3;
-            label1.Text = "Kullanıcı Adı:";
+            label1.Text = "Email:";
             // 
             // label2
             // 
@@ -83,17 +88,33 @@
             label2.TabIndex = 4;
             label2.Text = "Şifre:";
             // 
-            // Form1
+            // btnUyeOl
+            // 
+            btnUyeOl.Anchor = AnchorStyles.None;
+            btnUyeOl.BackColor = Color.CornflowerBlue;
+            btnUyeOl.FlatStyle = FlatStyle.Flat;
+            btnUyeOl.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnUyeOl.ForeColor = Color.White;
+            btnUyeOl.Location = new Point(332, 331);
+            btnUyeOl.Name = "btnUyeOl";
+            btnUyeOl.Size = new Size(94, 29);
+            btnUyeOl.TabIndex = 5;
+            btnUyeOl.Text = "Üye Ol";
+            btnUyeOl.UseVisualStyleBackColor = false;
+            btnUyeOl.Click += btnUyeOl_Click;
+            // 
+            // girisPanel
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnUyeOl);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(btnGiris);
             Controls.Add(txtSifre);
             Controls.Add(txtKullaniciAdi);
-            Name = "Form1";
+            Name = "girisPanel";
             Text = "Form1";
             WindowState = FormWindowState.Maximized;
             ResumeLayout(false);
@@ -107,5 +128,6 @@
         private Button btnGiris;
         private Label label1;
         private Label label2;
+        private Button btnUyeOl;
     }
 }

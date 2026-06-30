@@ -68,6 +68,14 @@
             txtKullaniciAdi = new TextBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             dgvKullanicilar = new DataGridView();
+            tabPage3 = new TabPage();
+            dgvOnayBekleyenler = new DataGridView();
+            btnTeslimAl = new Button();
+            label1 = new Label();
+            btnOnayla = new Button();
+            txtOduncArama = new TextBox();
+            btnReddet = new Button();
+            dgvOduncTakip = new DataGridView();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -79,12 +87,16 @@
             panel2.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvKullanicilar).BeginInit();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvOnayBekleyenler).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvOduncTakip).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
             // 
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
+            tabControl1.Controls.Add(tabPage3);
             tabControl1.Dock = DockStyle.Fill;
             tabControl1.Location = new Point(0, 0);
             tabControl1.Name = "tabControl1";
@@ -523,6 +535,100 @@
             dgvKullanicilar.TabIndex = 0;
             dgvKullanicilar.SelectionChanged += dgvKullanicilar_SelectionChanged;
             // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(dgvOnayBekleyenler);
+            tabPage3.Controls.Add(btnTeslimAl);
+            tabPage3.Controls.Add(label1);
+            tabPage3.Controls.Add(btnOnayla);
+            tabPage3.Controls.Add(txtOduncArama);
+            tabPage3.Controls.Add(btnReddet);
+            tabPage3.Controls.Add(dgvOduncTakip);
+            tabPage3.Location = new Point(4, 29);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(1392, 767);
+            tabPage3.TabIndex = 2;
+            tabPage3.Text = "Ödünç İşlemleri";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dgvOnayBekleyenler
+            // 
+            dgvOnayBekleyenler.BackgroundColor = SystemColors.GradientActiveCaption;
+            dgvOnayBekleyenler.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvOnayBekleyenler.Location = new Point(717, 54);
+            dgvOnayBekleyenler.Name = "dgvOnayBekleyenler";
+            dgvOnayBekleyenler.RowHeadersWidth = 51;
+            dgvOnayBekleyenler.Size = new Size(686, 442);
+            dgvOnayBekleyenler.TabIndex = 5;
+            // 
+            // btnTeslimAl
+            // 
+            btnTeslimAl.BackColor = Color.CornflowerBlue;
+            btnTeslimAl.FlatStyle = FlatStyle.Flat;
+            btnTeslimAl.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnTeslimAl.ForeColor = Color.White;
+            btnTeslimAl.Location = new Point(6, 502);
+            btnTeslimAl.Name = "btnTeslimAl";
+            btnTeslimAl.Size = new Size(171, 29);
+            btnTeslimAl.TabIndex = 4;
+            btnTeslimAl.Text = "Seçili Kitabı Teslim Al";
+            btnTeslimAl.UseVisualStyleBackColor = false;
+            btnTeslimAl.Click += btnTeslimAl_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(18, 21);
+            label1.Name = "label1";
+            label1.Size = new Size(64, 20);
+            label1.TabIndex = 0;
+            label1.Text = "Üye Adı:";
+            label1.Click += label1_Click;
+            // 
+            // btnOnayla
+            // 
+            btnOnayla.BackColor = Color.CornflowerBlue;
+            btnOnayla.FlatStyle = FlatStyle.Flat;
+            btnOnayla.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnOnayla.ForeColor = Color.White;
+            btnOnayla.Location = new Point(717, 502);
+            btnOnayla.Name = "btnOnayla";
+            btnOnayla.Size = new Size(94, 29);
+            btnOnayla.TabIndex = 3;
+            btnOnayla.Text = "Onayla";
+            btnOnayla.UseVisualStyleBackColor = false;
+            // 
+            // txtOduncArama
+            // 
+            txtOduncArama.Location = new Point(88, 18);
+            txtOduncArama.Name = "txtOduncArama";
+            txtOduncArama.Size = new Size(125, 27);
+            txtOduncArama.TabIndex = 1;
+            // 
+            // btnReddet
+            // 
+            btnReddet.BackColor = Color.CornflowerBlue;
+            btnReddet.FlatStyle = FlatStyle.Flat;
+            btnReddet.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnReddet.ForeColor = Color.White;
+            btnReddet.Location = new Point(833, 502);
+            btnReddet.Name = "btnReddet";
+            btnReddet.Size = new Size(94, 29);
+            btnReddet.TabIndex = 6;
+            btnReddet.Text = "Reddet";
+            btnReddet.UseVisualStyleBackColor = false;
+            // 
+            // dgvOduncTakip
+            // 
+            dgvOduncTakip.BackgroundColor = SystemColors.GradientActiveCaption;
+            dgvOduncTakip.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvOduncTakip.Location = new Point(6, 54);
+            dgvOduncTakip.Name = "dgvOduncTakip";
+            dgvOduncTakip.RowHeadersWidth = 51;
+            dgvOduncTakip.Size = new Size(687, 442);
+            dgvOduncTakip.TabIndex = 2;
+            // 
             // adminPanel
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -534,6 +640,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Kütüphane Yönetim Paneli";
             WindowState = FormWindowState.Maximized;
+            Activated += adminPanel_Activated;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
@@ -547,6 +654,10 @@
             panel2.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvKullanicilar).EndInit();
+            tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvOnayBekleyenler).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvOduncTakip).EndInit();
             ResumeLayout(false);
         }
 
@@ -592,5 +703,13 @@
         private TextBox txtArama;
         private Label lblkullaniciAra;
         private Button button1;
+        private TabPage tabPage3;
+        private TextBox txtOduncArama;
+        private Label label1;
+        private Button btnTeslimAl;
+        private Button btnOnayla;
+        private DataGridView dgvOduncTakip;
+        private Button btnReddet;
+        private DataGridView dgvOnayBekleyenler;
     }
 }

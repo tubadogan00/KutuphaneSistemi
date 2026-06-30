@@ -47,11 +47,12 @@ namespace kütüphaneSistemi
         using (var con = KutuphaneVeri.Baglan())
         {
             con.Open();
-            string sorgu = @"SELECT k.Ad, k.ISBN, o.VerilisTarihi, o.TeslimTarihi 
+                    string sorgu = @"SELECT k.Ad, k.ISBN, o.VerilisTarihi, o.TeslimTarihi 
                              FROM OduncKitaplar o 
-                             INNER JOIN Kitaplar k ON o.KitapID = k.KitapID";
+                             INNER JOIN Kitaplar k ON o.KitapID = k.KitapID 
+                             WHERE o.KullaniciID = @kid";
 
-            MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
+                    MySqlDataAdapter da = new MySqlDataAdapter(sorgu, con);
             DataTable dt = new DataTable();
             da.Fill(dt);
 
@@ -130,12 +131,14 @@ namespace kütüphaneSistemi
             DataRowView rowView = (DataRowView)dgvKitaplar.CurrentRow.DataBoundItem;
             int kitapID = Convert.ToInt32(rowView["KitapID"]);
             string kitapAdi = rowView["Ad"].ToString();
-            string isbn = rowView["ISBN"].ToString();
             int stok = Convert.ToInt32(rowView["Stok"]);
 
-            if (stok <= 1)
+            // GÜNCELLEME: Sabit 1 yerine global sınıftan gerçek ID'yi alıyoruz
+            int aktifKullaniciID = AktifKullanici.ID;
+
+            if (stok <= 0)
             {
-                MessageBox.Show("Bu kitap ödünç verilemez veya stokta yok!");
+                MessageBox.Show("Bu kitap şu an stokta yok!");
                 return;
             }
 
@@ -144,36 +147,43 @@ namespace kütüphaneSistemi
                 using (var con = KutuphaneVeri.Baglan())
                 {
                     con.Open();
-                    // Transaction kullanarak iki işlemin de başarılı olduğundan emin oluyoruz
-                    using (var trans = con.BeginTransaction())
+
+                    // 1. KONTROL: Bu kitabı zaten ödünç almış ve iade etmemiş mi?
+                    // "TeslimTarihi IS NULL" yerine "OnayDurumu < 2" kullanmak daha garantidir.
+                    // (0: Onay Bekliyor, 1: Elinde, 2: Teslim Edildi)
+                    string kontrolSorgusu = "SELECT COUNT(*) FROM OduncKitaplar WHERE KitapID = @id AND KullaniciID = @kid AND OnayDurumu < 2";
+
+                    MySqlCommand cmdKontrol = new MySqlCommand(kontrolSorgusu, con);
+                    cmdKontrol.Parameters.AddWithValue("@id", kitapID);
+                    cmdKontrol.Parameters.AddWithValue("@kid", aktifKullaniciID);
+
+                    if (Convert.ToInt32(cmdKontrol.ExecuteScalar()) > 0)
                     {
-                        // 1. Stok düş
-                        string sqlStok = "UPDATE Kitaplar SET Stok = Stok - 1 WHERE KitapID = @id";
-                        MySqlCommand cmd1 = new MySqlCommand(sqlStok, con, trans);
-                        cmd1.Parameters.AddWithValue("@id", kitapID);
-                        cmd1.ExecuteNonQuery();
-
-                        // 2. Ödünç kaydı ekle
-                        // btnOduncAl_Click içindeki ilgili satır
-                        string sqlKayit = "INSERT INTO OduncKitaplar (KitapID, VerilisTarihi, TeslimTarihi) VALUES (@id, @alis, @teslim)";
-                        MySqlCommand cmd2 = new MySqlCommand(sqlKayit, con, trans);
-                        cmd2.Parameters.AddWithValue("@id", kitapID);
-                        cmd2.Parameters.AddWithValue("@alis", DateTime.Now);
-                        cmd2.Parameters.AddWithValue("@teslim", DateTime.Now.AddDays(30));
-                        cmd2.ExecuteNonQuery();
-
-                        trans.Commit(); // Her şey yolunda
+                        MessageBox.Show("Bu kitap zaten üzerinizde kayıtlı veya onay bekliyor!");
+                        return;
                     }
-                }
 
-                // Güncellemeleri yansıt
-                KitaplariGetirVeGoster();
-                OduncAlinanlariGetir();
-                MessageBox.Show($"{kitapAdi} başarıyla ödünç alındı.");
+                    // 2. İSTEK GÖNDER
+                    // OnayDurumu 0 olarak ekleniyor ki admin panelinde "Onay Bekleyenler" kısmına düşsün.
+                    string sqlKayit = @"INSERT INTO OduncKitaplar (KullaniciID, KitapID, VerilisTarihi, OnayDurumu) 
+                                VALUES (@kid, @kitapid, @alis, 0)";
+
+                    MySqlCommand cmd2 = new MySqlCommand(sqlKayit, con);
+                    cmd2.Parameters.AddWithValue("@kid", aktifKullaniciID);
+                    cmd2.Parameters.AddWithValue("@kitapid", kitapID);
+                    cmd2.Parameters.AddWithValue("@alis", DateTime.Now);
+
+                    cmd2.ExecuteNonQuery();
+
+                    MessageBox.Show($"{kitapAdi} için ödünç alma isteğiniz admin onayına gönderildi.");
+
+                    // İsteğe bağlı: Tabloyu güncelleyerek stok bilgisini veya durumu tazeleyebilirsin
+                    // KitaplariListele(); 
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Hata: " + ex.Message);
+                MessageBox.Show("Hata oluştu: " + ex.Message);
             }
         }
 
