@@ -37,10 +37,19 @@ namespace kütüphaneSistemi
                 using (var con = KutuphaneVeri.Baglan())
                 {
                     con.Open();
-                    string sorgu = @"SELECT k.Ad, k.ISBN, o.VerilisTarihi, o.TeslimTarihi 
-                             FROM OduncKitaplar o 
-                             INNER JOIN Kitaplar k ON o.KitapID = k.KitapID 
-                             WHERE o.KullaniciID = @kid AND o.OnayDurumu = 1";
+                    string sorgu = @"SELECT
+                    k.Ad,
+                    k.ISBN,
+                    o.VerilisTarihi,
+                    o.TeslimTarihi,
+                    CASE
+                        WHEN o.OnayDurumu = 1 THEN 'Aktif'
+                        WHEN o.OnayDurumu = 2 THEN '✅Teslim Edildi'
+                    END AS Durum
+                 FROM OduncKitaplar o
+                 INNER JOIN Kitaplar k ON o.KitapID = k.KitapID
+                 WHERE o.KullaniciID = @kid
+                 AND o.OnayDurumu IN (1, 2)";
 
                     MySqlCommand cmd = new MySqlCommand(sorgu, con);
                     cmd.Parameters.Add("@kid", MySqlDbType.Int32).Value = AktifKullanici.ID;
@@ -51,12 +60,13 @@ namespace kütüphaneSistemi
 
                     // Veriyi DataGridView'a doğrudan bağla
                     dgvOduncAlinanlar.DataSource = dt;
-                    if (dgvOduncAlinanlar.Columns.Count >= 4)
+                    if (dgvOduncAlinanlar.Columns.Count >= 5)
                     {
                         dgvOduncAlinanlar.Columns["Ad"].HeaderText = "Kitap Adı";
                         dgvOduncAlinanlar.Columns["ISBN"].HeaderText = "ISBN";
                         dgvOduncAlinanlar.Columns["VerilisTarihi"].HeaderText = "Veriliş Tarihi";
                         dgvOduncAlinanlar.Columns["TeslimTarihi"].HeaderText = "Teslim Tarihi";
+                        dgvOduncAlinanlar.Columns["Durum"].HeaderText = "Durum";
                     }
                 }
             }

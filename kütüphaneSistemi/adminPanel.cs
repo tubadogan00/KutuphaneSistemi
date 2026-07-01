@@ -30,9 +30,8 @@ namespace kütüphaneSistemi
 
             KitaplariGetir();
             KullanicilariGetir();
-
+            AktifOduncleriGetir();
             OnayBekleyenleriGetir();
-            OduncListesiniGetir();
         }
 
         private void TemayiUygula()
@@ -40,7 +39,7 @@ namespace kütüphaneSistemi
         {
             this.BackColor = Color.FromArgb(240, 240, 240);
 
-            foreach (DataGridView dgv in new[] { dgvAdminKitaplar, dgvKullanicilar })
+            foreach (DataGridView dgv in new[] { dgvAdminKitaplar, dgvKullanicilar, dgvOduncTakip, dgvOnayBekleyenler })
             {
                 dgv.BorderStyle = BorderStyle.None;
 
@@ -225,7 +224,7 @@ namespace kütüphaneSistemi
 
                     if (Convert.ToInt32(cmdGecmis.ExecuteScalar()) > 0)
                     {
-                        MessageBox.Show("Bu kitap geçmişte ödünç verildiği için silinemez.",
+                        MessageBox.Show("Bu kitap daha önce ödünç verildiği için sistemden silinemez. Geçmiş ödünç kayıtlarının korunması amacıyla silme işlemine izin verilmemektedir.",
                                         "Kayıt Bütünlüğü Uyarısı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
@@ -637,13 +636,17 @@ namespace kütüphaneSistemi
             using (var con = KutuphaneVeri.Baglan())
             {
                 con.Open();
-                // 1. Ödünç tablosundan sil (veya Durum=2 yap)
-                string sqlIade = "DELETE FROM OduncKitaplar WHERE OduncID = @id";
-                // 2. Stok artır
+
+                string sqlIade = @"UPDATE OduncKitaplar
+                           SET OnayDurumu = 2,
+                               TeslimTarihi = @tarih
+                           WHERE OduncID = @id";
+
                 string sqlStok = "UPDATE Kitaplar SET Stok = Stok + 1 WHERE KitapID = @kitapid";
 
                 MySqlCommand cmd1 = new MySqlCommand(sqlIade, con);
                 cmd1.Parameters.AddWithValue("@id", oduncID);
+                cmd1.Parameters.AddWithValue("@tarih", DateTime.Now);
                 cmd1.ExecuteNonQuery();
 
                 MySqlCommand cmd2 = new MySqlCommand(sqlStok, con);
@@ -654,12 +657,6 @@ namespace kütüphaneSistemi
             MessageBox.Show("Kitap teslim alındı ve stok güncellendi.");
             AktifOduncleriGetir(); // Listeyi yenile
         }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnOnayla_Click(object sender, EventArgs e)
         {
             if (dgvOnayBekleyenler.SelectedRows.Count == 0) return;

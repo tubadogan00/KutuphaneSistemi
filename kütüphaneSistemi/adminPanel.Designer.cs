@@ -430,7 +430,7 @@
             // 
             btnKaydett.BackColor = Color.CornflowerBlue;
             btnKaydett.ForeColor = Color.White;
-            btnKaydett.Location = new Point(3, 139);
+            btnKaydett.Location = new Point(3, 112);
             btnKaydett.Name = "btnKaydett";
             btnKaydett.Size = new Size(174, 40);
             btnKaydett.TabIndex = 5;
@@ -442,11 +442,11 @@
             // 
             btnKullaniciGuncelle.BackColor = Color.CornflowerBlue;
             btnKullaniciGuncelle.ForeColor = Color.White;
-            btnKullaniciGuncelle.Location = new Point(3, 93);
+            btnKullaniciGuncelle.Location = new Point(3, 75);
             btnKullaniciGuncelle.Name = "btnKullaniciGuncelle";
             btnKullaniciGuncelle.Size = new Size(177, 40);
             btnKullaniciGuncelle.TabIndex = 4;
-            btnKullaniciGuncelle.Text = "Kullanıcı Güncelle";
+            btnKullaniciGuncelle.Text = "Güncelle";
             btnKullaniciGuncelle.UseVisualStyleBackColor = false;
             btnKullaniciGuncelle.Click += btnKullaniciGuncelle_Click;
             // 
@@ -454,7 +454,7 @@
             // 
             btnKullaniciSil.BackColor = Color.CornflowerBlue;
             btnKullaniciSil.ForeColor = Color.White;
-            btnKullaniciSil.Location = new Point(3, 47);
+            btnKullaniciSil.Location = new Point(3, 38);
             btnKullaniciSil.Name = "btnKullaniciSil";
             btnKullaniciSil.Size = new Size(174, 40);
             btnKullaniciSil.TabIndex = 3;
@@ -559,7 +559,7 @@
             dgvOnayBekleyenler.Location = new Point(717, 54);
             dgvOnayBekleyenler.Name = "dgvOnayBekleyenler";
             dgvOnayBekleyenler.RowHeadersWidth = 51;
-            dgvOnayBekleyenler.Size = new Size(686, 442);
+            dgvOnayBekleyenler.Size = new Size(686, 452);
             dgvOnayBekleyenler.TabIndex = 5;
             // 
             // btnTeslimAl
@@ -568,11 +568,11 @@
             btnTeslimAl.FlatStyle = FlatStyle.Flat;
             btnTeslimAl.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnTeslimAl.ForeColor = Color.White;
-            btnTeslimAl.Location = new Point(6, 502);
+            btnTeslimAl.Location = new Point(6, 512);
             btnTeslimAl.Name = "btnTeslimAl";
-            btnTeslimAl.Size = new Size(171, 29);
+            btnTeslimAl.Size = new Size(109, 29);
             btnTeslimAl.TabIndex = 4;
-            btnTeslimAl.Text = "Seçili Kitabı Teslim Al";
+            btnTeslimAl.Text = "Teslim Al";
             btnTeslimAl.UseVisualStyleBackColor = false;
             btnTeslimAl.Click += btnTeslimAl_Click;
             // 
@@ -584,7 +584,6 @@
             label1.Size = new Size(64, 20);
             label1.TabIndex = 0;
             label1.Text = "Üye Adı:";
-            label1.Click += label1_Click;
             // 
             // btnOnayla
             // 
@@ -592,9 +591,9 @@
             btnOnayla.FlatStyle = FlatStyle.Flat;
             btnOnayla.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnOnayla.ForeColor = Color.White;
-            btnOnayla.Location = new Point(717, 502);
+            btnOnayla.Location = new Point(717, 512);
             btnOnayla.Name = "btnOnayla";
-            btnOnayla.Size = new Size(94, 29);
+            btnOnayla.Size = new Size(67, 29);
             btnOnayla.TabIndex = 3;
             btnOnayla.Text = "Onayla";
             btnOnayla.UseVisualStyleBackColor = false;
@@ -614,9 +613,9 @@
             btnReddet.FlatStyle = FlatStyle.Flat;
             btnReddet.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnReddet.ForeColor = Color.White;
-            btnReddet.Location = new Point(833, 502);
+            btnReddet.Location = new Point(842, 512);
             btnReddet.Name = "btnReddet";
-            btnReddet.Size = new Size(94, 29);
+            btnReddet.Size = new Size(79, 29);
             btnReddet.TabIndex = 6;
             btnReddet.Text = "Reddet";
             btnReddet.UseVisualStyleBackColor = false;
@@ -629,7 +628,7 @@
             dgvOduncTakip.Location = new Point(6, 54);
             dgvOduncTakip.Name = "dgvOduncTakip";
             dgvOduncTakip.RowHeadersWidth = 51;
-            dgvOduncTakip.Size = new Size(687, 442);
+            dgvOduncTakip.Size = new Size(687, 452);
             dgvOduncTakip.TabIndex = 2;
             // 
             // adminPanel
@@ -644,6 +643,7 @@
             Text = "Kütüphane Yönetim Paneli";
             WindowState = FormWindowState.Maximized;
             Activated += adminPanel_Activated;
+            Load += adminPanel_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
@@ -709,10 +709,10 @@
         private TabPage tabPage3;
         private TextBox txtOduncArama;
         private Label label1;
-        private Button btnTeslimAl;
         private Button btnOnayla;
         private DataGridView dgvOduncTakip;
         private Button btnReddet;
         private DataGridView dgvOnayBekleyenler;
+        private Button btnTeslimAl;
     }
 }

@@ -33,16 +33,16 @@ namespace kütüphaneSistemi
             // dgvKitaplar
             // 
             dgvKitaplar.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvKitaplar.Dock = DockStyle.Fill;
             dgvKitaplar.Location = new Point(0, 0);
             dgvKitaplar.Name = "dgvKitaplar";
             dgvKitaplar.RowHeadersWidth = 51;
-            dgvKitaplar.Size = new Size(729, 528);
+            dgvKitaplar.Size = new Size(1052, 900);
             dgvKitaplar.TabIndex = 0;
             // 
             // btnOduncAl
             // 
-            btnOduncAl.Location = new Point(50, 270);
+            btnOduncAl.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnOduncAl.Location = new Point(3, 490);
             btnOduncAl.Name = "btnOduncAl";
             btnOduncAl.Size = new Size(100, 30);
             btnOduncAl.TabIndex = 1;
@@ -75,7 +75,8 @@ namespace kütüphaneSistemi
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(516, 268);
+            textBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            textBox1.Location = new Point(292, 488);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(125, 27);
             textBox1.TabIndex = 4;
@@ -84,9 +85,10 @@ namespace kütüphaneSistemi
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-            label1.Location = new Point(366, 270);
+            label1.Location = new Point(165, 490);
             label1.Name = "label1";
             label1.Size = new Size(121, 25);
             label1.TabIndex = 3;
@@ -118,21 +120,21 @@ namespace kütüphaneSistemi
             // 
             // dgvOduncAlinanlar
             // 
-            dgvOduncAlinanlar.BackgroundColor = Color.White;
+            dgvOduncAlinanlar.BackgroundColor = SystemColors.ActiveBorder;
             dgvOduncAlinanlar.ColumnHeadersHeight = 29;
             dgvOduncAlinanlar.Dock = DockStyle.Left;
             dgvOduncAlinanlar.Location = new Point(0, 0);
             dgvOduncAlinanlar.Name = "dgvOduncAlinanlar";
             dgvOduncAlinanlar.RowHeadersWidth = 51;
-            dgvOduncAlinanlar.Size = new Size(729, 528);
+            dgvOduncAlinanlar.Size = new Size(677, 900);
             dgvOduncAlinanlar.TabIndex = 0;
             // 
-            // Form2
+            // kullaniciPanel
             // 
             BackColor = Color.White;
             ClientSize = new Size(737, 561);
             Controls.Add(tabControl1);
-            Name = "Form2";
+            Name = "kullaniciPanel";
             Text = "Kütüphane Sistemi";
             WindowState = FormWindowState.Maximized;
             Load += Form2_Load;
